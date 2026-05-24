@@ -1,0 +1,40 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function ownsCustomerProfile(userId) {
+      return signedIn() && request.auth.uid == userId;
+    }
+
+    match /customers/{userId} {
+      allow create, update, read: if ownsCustomerProfile(userId);
+      allow delete: if false;
+    }
+
+    match /products/{productId} {
+      allow read: if true;
+      allow create, delete: if false;
+      allow update: if request.resource.data.diff(resource.data).changedKeys().hasOnly(['quantity', 'updatedAt'])
+        && request.resource.data.quantity is number
+        && request.resource.data.quantity >= 0
+        && request.resource.data.quantity <= resource.data.quantity;
+    }
+
+    match /orders/{orderId} {
+      allow create: if request.resource.data.keys().hasAll(['customer', 'items', 'total', 'status', 'createdAt'])
+        && request.resource.data.customer.name is string
+        && request.resource.data.customer.phone is string
+        && request.resource.data.customer.address is string
+        && request.resource.data.items is list
+        && request.resource.data.items.size() > 0
+        && request.resource.data.total is number
+        && request.resource.data.status == 'new';
+
+      allow read: if signedIn() && resource.data.userId == request.auth.uid;
+      allow update, delete: if false;
+    }
+  }
+}

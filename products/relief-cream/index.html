@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Dr. Althea 345 Relief Cream
+    </title>
+
+    <!-- CSS -->
+
+    <link rel="stylesheet" href="../../css/base.css?v=20260520n">
+    <link rel="stylesheet" href="../../css/layout.css?v=20260520n">
+    <link rel="stylesheet" href="../../css/components.css?v=20260522b">
+    <link rel="stylesheet" href="../../css/product.css?v=20260520n">
+
+    <!-- FONT -->
+
+    <link rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- ICONS -->
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+</head>
+
+<body>
+
+    <!-- HEADER -->
+
+    <div id="header-container"></div>
+
+    <!-- NAVBAR -->
+
+    <div id="navbar-container"></div>
+
+    
+    <nav class="breadcrumb breadcrumb-links product-breadcrumb"
+        aria-label="Fil d'Ariane">
+
+        <a href="../../index.html">
+            Accueil
+        </a>
+
+        <span>›</span>
+
+        <a href="../../categories/cremes.html">
+            Crèmes
+        </a>
+
+        <span>›</span>
+
+        <span>
+            345 Relief Cream
+        </span>
+
+    </nav>
+<!-- PRODUCT SECTION -->
+
+    <section class="product-page">
+
+        <!-- PRODUCT GALLERY -->
+
+        <div class="product-gallery">
+
+            <!-- TWO IMAGES -->
+
+            <div class="gallery-thumbnails">
+
+                <img
+                    src="product-main.png"
+                    class="thumb active-thumb"
+                    onclick="changeImage(0)">
+
+                <img
+                    src="product-2.png"
+                    class="thumb"
+                    onclick="changeImage(1)">
+
+            </div>
+
+            <!-- MAIN IMAGE -->
+
+            <div class="gallery-main">
+
+                <!-- LEFT -->
+
+                <button class="gallery-arrow left-arrow"
+                    onclick="previousImage()">
+
+                    <i class="fa-solid fa-chevron-left"></i>
+
+                </button>
+
+                <!-- IMAGE -->
+
+                <img
+                    id="mainProductImage"
+                    src="product-main.png"
+                    alt="Produit">
+
+                <!-- RIGHT -->
+
+                <button class="gallery-arrow right-arrow"
+                    onclick="nextImage()">
+
+                    <i class="fa-solid fa-chevron-right"></i>
+
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- PRODUCT DETAILS -->
+
+        <div class="product-details">
+
+            <p class="product-brand">
+
+                BODY & SEOUL
+
+            </p>
+
+            <h1 class="product-title">
+
+                Dr. Althea
+                345 Relief Cream
+
+            </h1>
+
+            <!-- RATING -->
+
+            <div class="product-rating">
+
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star-half-stroke"></i>
+
+                <span>381 avis</span>
+
+            </div>
+
+            <!-- PRICE -->
+
+            <div class="product-price">
+
+                319 DHS
+
+            </div>
+
+            <!-- DESCRIPTION -->
+
+            <p class="product-description">
+
+                Une crème apaisante coréenne
+                spécialement formulée
+                pour calmer les irritations,
+                renforcer la barrière cutanée
+                et hydrater intensément
+                les peaux sensibles
+                ou fragilisées.
+
+            </p>
+
+            <!-- BENEFITS -->
+
+            <div class="product-benefits">
+
+                <div class="benefit">
+
+                    <i class="fa-solid fa-check"></i>
+
+                    <span>Apaise les rougeurs et irritations</span>
+
+                </div>
+
+                <div class="benefit">
+
+                    <i class="fa-solid fa-check"></i>
+
+                    <span>Hydratation profonde et durable</span>
+
+                </div>
+
+                <div class="benefit">
+
+                    <i class="fa-solid fa-check"></i>
+
+                    <span>Renforce la barrière cutanée</span>
+
+                </div>
+
+                <div class="benefit">
+
+                    <i class="fa-solid fa-check"></i>
+
+                    <span>Texture légère et confortable</span>
+
+                </div>
+
+            </div>
+
+            <!-- ACTIONS -->
+
+            <div class="product-actions">
+
+                <!-- QUANTITY -->
+
+                <div class="quantity-selector">
+
+                    <button onclick="decreaseQuantity()">
+                        -
+                    </button>
+
+                    <span id="quantity-value">
+                        1
+                    </span>
+
+                    <button onclick="increaseQuantity()">
+                        +
+                    </button>
+
+                </div>
+
+                <!-- FAVORITE -->
+
+                <button class="favorite-button"
+                    data-product="relief-cream">
+
+                    <i class="fa-regular fa-heart"></i>
+
+                </button>
+
+                <!-- ADD TO CART -->
+
+                <button class="add-cart-button">
+
+                    Ajouter au panier
+
+                </button>
+
+            </div>
+
+            <!-- DELIVERY -->
+
+            <div class="delivery-box">
+
+                <div class="delivery-item">
+
+                    <i class="fa-solid fa-truck"></i>
+
+                    <div>
+
+                        <h4>Livraison rapide</h4>
+
+                        <p>Partout au Maroc</p>
+
+                    </div>
+
+                </div>
+
+                <div class="delivery-item">
+
+                    <i class="fa-solid fa-shield"></i>
+
+                    <div>
+
+                        <h4>Produit authentique</h4>
+
+                        <p>Importé directement de Corée</p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- EXTRA INFO -->
+
+    <section class="product-extra-info">
+
+        <div class="info-card">
+
+            <h2>Description</h2>
+
+            <p>
+
+                La 345 Relief Cream de Dr. Althea
+                aide à calmer la peau sensible
+                et irritée grâce à une formule
+                enrichie en ingrédients apaisants
+                et hydratants.
+                Elle laisse la peau douce,
+                équilibrée et confortable.
+
+            </p>
+
+        </div>
+
+        <div class="info-card">
+
+            <h2>Conseils d’utilisation</h2>
+
+            <p>
+
+                Appliquer une quantité adaptée
+                comme dernière étape
+                de la routine skincare.
+                Masser délicatement
+                jusqu’à absorption complète.
+
+            </p>
+
+        </div>
+
+        <div class="info-card">
+
+            <h2>Ingrédients clés</h2>
+
+            <p>
+
+                Centella Asiatica,
+                Panthénol,
+                Céramides,
+                Niacinamide,
+                Extraits botaniques apaisants.
+
+            </p>
+
+        </div>
+
+    </section>
+
+    <!-- IMAGE GALLERY SCRIPT -->
+<!-- JS -->
+    <script src="../../js/products-data.js?v=20260520g"></script>
+
+    <script src="../../js/cart.js?v=20260522d"></script>
+
+    <script src="../../js/favorites.js?v=20260522g"></script>
+
+    <script src="../../js/product-page.js?v=20260522g"></script>
+    <div id="footer-container"></div>
+
+    <script src="../../js/components-loader.js?v=20260522i" data-base="../../"></script>
+
+</body>
+
+</html>

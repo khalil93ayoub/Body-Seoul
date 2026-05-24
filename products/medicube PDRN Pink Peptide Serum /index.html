@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Medicube PDRN Pink Peptide Serum
+    </title>
+
+    <!-- CSS -->
+
+    <link rel="stylesheet" href="../../css/base.css?v=20260520n">
+    <link rel="stylesheet" href="../../css/layout.css?v=20260520n">
+    <link rel="stylesheet" href="../../css/components.css?v=20260522b">
+    <link rel="stylesheet" href="../../css/product.css?v=20260520n">
+
+    <!-- GOOGLE FONT -->
+
+    <link rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- ICONS -->
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+</head>
+
+<body>
+
+    <!-- HEADER -->
+
+    <div id="header-container"></div>
+
+    <!-- NAVBAR -->
+
+    <div id="navbar-container"></div>
+
+    
+    <nav class="breadcrumb breadcrumb-links product-breadcrumb"
+        aria-label="Fil d'Ariane">
+
+        <a href="../../index.html">
+            Accueil
+        </a>
+
+        <span>›</span>
+
+        <a href="../../categories/cremes.html">
+            Crèmes
+        </a>
+
+        <span>›</span>
+
+        <span>
+            Medicube PDRN Pink Peptide Serum
+        </span>
+
+    </nav>
+<!-- PRODUCT SECTION -->
+
+    <section class="product-page">
+
+        <!-- GALLERY -->
+
+        <div class="product-gallery">
+
+            <!-- THUMBNAILS -->
+
+            <div class="gallery-thumbnails">
+
+                <img
+                    src="product-main.png"
+                    class="thumb active-thumb"
+                    onclick="changeImage(0)">
+
+                <img
+                    src="product-2.png"
+                    class="thumb"
+                    onclick="changeImage(1)">
+
+            </div>
+
+            <!-- MAIN IMAGE -->
+
+            <div class="gallery-main">
+
+                <!-- LEFT ARROW -->
+
+                <button class="gallery-arrow left-arrow"
+                    onclick="previousImage()">
+
+                    <i class="fa-solid fa-chevron-left"></i>
+
+                </button>
+
+                <!-- IMAGE -->
+
+                <img
+                    id="mainProductImage"
+                    src="product-main.png"
+                    alt="Produit">
+
+                <!-- RIGHT ARROW -->
+
+                <button class="gallery-arrow right-arrow"
+                    onclick="nextImage()">
+
+                    <i class="fa-solid fa-chevron-right"></i>
+
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- PRODUCT DETAILS -->
+
+        <div class="product-details">
+
+            <p class="product-brand">
+
+                BODY & SEOUL
+
+            </p>
+
+            <h1 class="product-title">
+
+                Medicube PDRN
+                Pink Peptide Serum
+
+            </h1>
+
+            <!-- RATING -->
+
+            <div class="product-rating">
+
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star-half-stroke"></i>
+
+                <span>352 avis</span>
+
+            </div>
+
+            <!-- PRICE -->
+
+            <div class="product-price">
+
+                329 DHS
+
+            </div>
+
+            <!-- DESCRIPTION -->
+
+            <p class="product-description">
+
+                Un sérum coréen illuminateur
+                enrichi en PDRN et peptides
+                pour améliorer l’élasticité,
+                hydrater intensément
+                et donner un effet glow
+                éclatant à la peau.
+
+            </p>
+
+            <!-- BENEFITS -->
+
+            <div class="product-benefits">
+
+                <div class="benefit">
+
+                    <i class="fa-solid fa-check"></i>
+
+                    <span>Effet glow immédiat</span>
+
+                </div>
+
+                <div class="benefit">
+
+                    <i class="fa-solid fa-check"></i>
+
+                    <span>Hydratation intense</span>
+
+                </div>
+
+                <div class="benefit">
+
+                    <i class="fa-solid fa-check"></i>
+
+                    <span>Améliore l’élasticité de la peau</span>
+
+                </div>
+
+                <div class="benefit">
+
+                    <i class="fa-solid fa-check"></i>
+
+                    <span>Texture légère et soyeuse</span>
+
+                </div>
+
+            </div>
+
+            <!-- ACTIONS -->
+
+            <div class="product-actions">
+
+                <!-- QUANTITY -->
+
+                <div class="quantity-selector">
+
+                    <button onclick="decreaseQuantity()">
+                        -
+                    </button>
+
+                    <span id="quantity-value">
+                        1
+                    </span>
+
+                    <button onclick="increaseQuantity()">
+                        +
+                    </button>
+
+                </div>
+
+                <!-- FAVORITE -->
+
+                <button class="favorite-button"
+                    data-product="pdrn-serum">
+
+                    <i class="fa-regular fa-heart"></i>
+
+                </button>
+
+                <!-- ADD TO CART -->
+
+                <button class="add-cart-button">
+
+                    Ajouter au panier
+
+                </button>
+
+            </div>
+
+            <!-- DELIVERY -->
+
+            <div class="delivery-box">
+
+                <div class="delivery-item">
+
+                    <i class="fa-solid fa-truck"></i>
+
+                    <div>
+
+                        <h4>Livraison rapide</h4>
+
+                        <p>Partout au Maroc</p>
+
+                    </div>
+
+                </div>
+
+                <div class="delivery-item">
+
+                    <i class="fa-solid fa-shield"></i>
+
+                    <div>
+
+                        <h4>Produit authentique</h4>
+
+                        <p>Importé directement de Corée</p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- EXTRA INFO -->
+
+    <section class="product-extra-info">
+
+        <div class="info-card">
+
+            <h2>Description</h2>
+
+            <p>
+
+                Le PDRN Pink Peptide Serum
+                aide à revitaliser
+                les peaux ternes et fatiguées.
+                Sa formule nourrit,
+                hydrate et améliore
+                l’apparence générale
+                de la peau pour un teint lumineux.
+
+            </p>
+
+        </div>
+
+        <div class="info-card">
+
+            <h2>Conseils d’utilisation</h2>
+
+            <p>
+
+                Après le nettoyage et le toner,
+                appliquer quelques gouttes
+                sur le visage.
+                Masser délicatement
+                jusqu’à absorption complète.
+
+            </p>
+
+        </div>
+
+        <div class="info-card">
+
+            <h2>Ingrédients clés</h2>
+
+            <p>
+
+                PDRN,
+                Complexe de Peptides,
+                Niacinamide,
+                Acide Hyaluronique,
+                Extraits apaisants coréens.
+
+            </p>
+
+        </div>
+
+    </section>
+
+    <!-- FOOTER -->
+
+    <div id="footer-container"></div>
+
+    <!-- IMAGE + QUANTITY + CART SCRIPT -->
+<!-- JS FILES -->
+    <script src="../../js/products-data.js?v=20260520g"></script>
+
+    <script src="../../js/cart.js?v=20260522d"></script>
+
+    <script src="../../js/favorites.js?v=20260522g"></script>
+
+    <script src="../../js/product-page.js?v=20260522g"></script>
+    <script src="../../js/components-loader.js?v=20260522i" data-base="../../"></script>
+
+</body>
+
+</html>

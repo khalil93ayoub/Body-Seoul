@@ -1,0 +1,131 @@
+<!-- TOP BAR -->
+
+<div class="top-bar">
+
+    <div>
+        Livraison partout au Maroc dès 249 DHS
+    </div>
+
+    <div class="top-center">
+
+        <span>Authentiques</span>
+        <span>•</span>
+        <span>Coréens</span>
+        <span>•</span>
+        <span>Efficaces</span>
+
+    </div>
+
+    <div class="top-right">
+
+        <a href="#" class="store-link">
+            <i class="fa-solid fa-location-dot"></i>
+            <span>Nos magasins</span>
+        </a>
+
+        <div class="language-switcher" aria-label="Choisir la langue">
+            <button type="button" class="language-option is-active" data-language-option="fr" aria-pressed="true">
+                FR
+            </button>
+            <button type="button" class="language-option" data-language-option="ar" aria-pressed="false">
+                عربي
+            </button>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- HEADER -->
+
+<header class="main-header">
+
+    <a href="../index.html"
+        class="logo">
+
+        <img src="../images/logo.png"
+            alt="Body & Seoul">
+
+    </a>
+
+    <div class="search-container">
+
+        <input type="text"
+            placeholder="Rechercher un produit...">
+
+        <i class="fa-solid fa-magnifying-glass"></i>
+
+    </div>
+
+    <div class="header-icons">
+
+        <button class="icon-box account-button" type="button">
+
+            <i class="fa-regular fa-user"></i>
+
+            <span>Compte</span>
+
+        </button>
+
+        <div class="header-dropdown-wrap">
+
+            <button class="icon-box header-action" type="button" data-dropdown="favorites-dropdown">
+
+                <i class="fa-regular fa-heart"></i>
+
+                <span>Favoris</span>
+
+                <small class="header-count" id="favorites-count">0</small>
+
+            </button>
+
+            <div class="header-dropdown" id="favorites-dropdown">
+
+                <div class="header-dropdown-head">
+                    <strong>Favoris</strong>
+                    <a href="../favorites.html">Voir tout</a>
+                </div>
+
+                <div class="header-dropdown-list" id="header-favorites-list"></div>
+
+            </div>
+
+        </div>
+
+        <div class="header-dropdown-wrap">
+
+            <button class="icon-box header-action" type="button" data-dropdown="cart-dropdown">
+
+                <i class="fa-solid fa-bag-shopping"></i>
+
+                <span>Panier</span>
+
+                <small class="header-count" id="cart-count">0</small>
+
+            </button>
+
+            <div class="header-dropdown" id="cart-dropdown">
+
+                <div class="header-dropdown-head">
+                    <strong>Panier</strong>
+                    <a href="../cart.html">Voir le panier</a>
+                </div>
+
+                <div class="header-dropdown-list" id="header-cart-list"></div>
+
+                <div class="header-dropdown-total">
+                    <span>Total</span>
+                    <strong id="header-cart-total">0 DHS</strong>
+                </div>
+
+                <a href="../checkout.html" class="header-checkout-button">
+                    Passer au checkout
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</header>

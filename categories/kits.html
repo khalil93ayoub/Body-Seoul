@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Kits - Body & Seoul</title>
+
+    <!-- CSS -->
+
+    <link rel="stylesheet"
+        href="../css/base.css?v=20260520n">
+
+    <link rel="stylesheet"
+        href="../css/layout.css?v=20260520n">
+
+    <link rel="stylesheet"
+        href="../css/components.css?v=20260522b">
+
+    <link rel="stylesheet"
+        href="../css/product.css?v=20260520n">
+
+    <!-- FONT -->
+
+    <link rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- ICONS -->
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+</head>
+
+<body>
+
+    <div id="header-container"></div>
+
+    <div id="navbar-container"></div>
+
+    <section class="category-page">
+
+        <div class="category-header">
+
+            <div class="category-info">
+
+                <nav class="breadcrumb breadcrumb-links"
+                    aria-label="Fil d'Ariane">
+                    <a href="../index.html">
+                        Accueil
+                    </a>
+                    <span>›</span>
+                    <span>
+                        Kits
+                    </span>
+                </nav>
+
+                <h1>
+                    Kits
+                </h1>
+
+                <p>
+                    Découvrez nos kits skincare complets pour construire une routine simple et efficace.
+                </p>
+
+                <span id="productCount">
+                    0 produits trouvés
+                </span>
+
+            </div>
+
+            <div class="category-banner">
+
+                <div class="category-banner-text">
+
+                    <h2>
+                        Le premier pas vers une peau saine et lumineuse
+                    </h2>
+
+                    <a href="#productsGrid">
+                        DÉCOUVRIR LA ROUTINE
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+
+                </div>
+
+                <img src="../images/hero-girls.png"
+                    alt="Routine skincare coréenne">
+
+            </div>
+
+        </div>
+
+        <div class="category-content">
+
+            <aside class="category-filters">
+
+                <div class="filters-top">
+
+                    <h3>
+                        FILTRES
+                    </h3>
+
+                    <button type="button">
+                        Réinitialiser
+                    </button>
+
+                </div>
+
+                <div class="filter-group">
+
+                    <h4>
+                        TYPE DE PEAU
+                    </h4>
+
+                    <label>
+                        <input type="checkbox" checked>
+                        Tous
+                    </label>
+
+                    <label>
+                        <input type="checkbox">
+                        Sèche
+                    </label>
+
+                    <label>
+                        <input type="checkbox">
+                        Mixte
+                    </label>
+
+                    <label>
+                        <input type="checkbox">
+                        Grasse
+                    </label>
+
+                    <label>
+                        <input type="checkbox">
+                        Sensible
+                    </label>
+
+                </div>
+
+                <div class="filter-group">
+
+                    <h4>
+                        PROBLÈMES DE PEAU
+                    </h4>
+
+                    <label>
+                        <input type="checkbox">
+                        Cernes
+                    </label>
+
+                    <label>
+                        <input type="checkbox">
+                        Poches
+                    </label>
+
+                    <label>
+                        <input type="checkbox">
+                        Rides
+                    </label>
+
+                    <label>
+                        <input type="checkbox">
+                        Déshydratation
+                    </label>
+
+                </div>
+
+                <div class="filter-group">
+
+                    <h4>
+                        TEXTURE
+                    </h4>
+
+                    <label>
+                        <input type="checkbox">
+                        Sérum
+                    </label>
+
+                    <label>
+                        <input type="checkbox">
+                        Crème
+                    </label>
+
+                    <label>
+                        <input type="checkbox">
+                        Gel
+                    </label>
+
+                </div>
+
+            </aside>
+
+            <main class="category-products">
+
+                <div class="category-toolbar">
+
+                    <label for="categorySort">
+                        Trier par :
+                    </label>
+
+                    <select id="categorySort">
+                        <option>
+                            Meilleures ventes
+                        </option>
+
+                        <option>
+                            Prix croissant
+                        </option>
+
+                        <option>
+                            Prix décroissant
+                        </option>
+
+                        <option>
+                            Nouveautés
+                        </option>
+                    </select>
+
+                </div>
+
+                <div id="productsGrid"
+                    class="category-products-grid">
+                </div>
+
+            </main>
+
+        </div>
+
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="../js/products-data.js?v=20260520g"></script>
+
+    <script src="../js/cart.js?v=20260522d"></script>
+
+    <script src="../js/favorites.js?v=20260522g"></script>
+
+    <script>
+        const currentCategory = "kits";
+    </script>
+
+    <script src="../js/category.js?v=20260522g"></script>
+    <script src="../js/components-loader.js?v=20260522i" data-base="../"></script>
+
+</body>
+
+</html>

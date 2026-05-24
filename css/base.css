@@ -1,0 +1,32 @@
+/* base.css */
+
+:root {
+
+  --green: #d9ef7a;
+  --dark: #222;
+  --light-bg: #f7f7f7;
+  --white: #fff;
+  --gray: #666;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:'Poppins', sans-serif;
+  background:var(--light-bg);
+  color:var(--dark);
+}
+
+a{
+  text-decoration:none;
+  color:inherit;
+}
+
+img{
+  width:100%;
+  display:block;
+}

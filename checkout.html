@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Checkout</title>
+
+<link rel="stylesheet"
+href="css/base.css?v=20260520n">
+
+<link rel="stylesheet"
+href="css/layout.css?v=20260520n">
+
+<link rel="stylesheet"
+href="css/components.css?v=20260522b">
+
+<link rel="stylesheet"
+href="css/product.css?v=20260520n">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+</head>
+
+<body>
+
+<div id="header-container"></div>
+
+<div id="navbar-container"></div>
+
+<section class="checkout-page">
+
+<div class="checkout-container">
+
+<div class="checkout-summary">
+
+<div class="checkout-section-heading">
+
+<span>Étape 1</span>
+
+<h1>
+Vos produits
+</h1>
+
+<p>
+Vérifiez votre panier avant de finaliser la commande.
+</p>
+
+</div>
+
+<div id="checkout-products">
+
+</div>
+
+<div class="checkout-total">
+
+<span>Total</span>
+
+<strong id="checkout-total-price">
+
+0 DHS
+
+</strong>
+
+</div>
+
+</div>
+
+<div class="checkout-form">
+
+<div class="checkout-section-heading">
+
+<span>Étape 2</span>
+
+<h1>
+Finaliser la commande
+</h1>
+
+<p>
+Renseignez vos informations de livraison.
+</p>
+
+</div>
+
+<input
+type="text"
+name="name"
+placeholder="Nom complet">
+
+<input
+type="text"
+name="phone"
+placeholder="Téléphone">
+
+<input
+type="email"
+name="email"
+placeholder="Email">
+
+<input
+type="text"
+name="address"
+placeholder="Adresse">
+
+<textarea
+name="notes"
+placeholder="Notes de livraison"></textarea>
+
+<button class="checkout-button">
+
+Confirmer la commande
+
+</button>
+
+</div>
+
+</div>
+
+</section>
+
+<div id="footer-container"></div>
+<script src="js/products-data.js?v=20260520g"></script>
+
+<script src="js/cart.js?v=20260522d"></script>
+
+<script src="js/components-loader.js?v=20260522i" data-base=""></script>
+
+</body>
+</html>
