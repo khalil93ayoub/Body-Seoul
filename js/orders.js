@@ -1,9 +1,5 @@
 (function () {
-    const FORM_SUBMIT_TOKEN = "bf3603cc019d5aa8703d667ae52736ca";
-    const FORM_SUBMIT_AJAX_ENDPOINT = "https://formsubmit.co/ajax/" + FORM_SUBMIT_TOKEN;
-    const FORM_SUBMIT_FORM_ENDPOINT = "https://formsubmit.co/" + FORM_SUBMIT_TOKEN;
-    const FIREBASE_TIMEOUT_MS = 8000;
-    const EMAIL_TIMEOUT_MS = 15000;
+    const FORM_SUBMIT_ENDPOINT = "https://formsubmit.co/ajax/bf3603cc019d5aa8703d667ae52736ca";
 
     function readCart() {
         try {
@@ -73,126 +69,42 @@
         }).join("\n");
     }
 
-    function makeOrderId() {
-        const stamp = new Date().toISOString().replace(/[-:TZ.]/g, "").slice(0, 14);
-        const random = Math.random().toString(36).slice(2, 6).toUpperCase();
-        return "BS-" + stamp + "-" + random;
+    function saveOrder(firebaseTools, order) {
+        const orderRef = firebaseTools.db.collection("orders").doc();
+        return orderRef.set(order).then(() => orderRef.id);
     }
 
-    function withTimeout(promise, ms, message) {
-        let timeoutId;
-        const timeout = new Promise((_, reject) => {
-            timeoutId = setTimeout(() => reject(new Error(message)), ms);
-        });
+    function sendOrderEmail(orderId, customer, items, orderTotal) {
+        const formData = new FormData();
+        const lines = orderLines(items);
 
-        return Promise.race([promise, timeout]).finally(() => clearTimeout(timeoutId));
-    }
-
-    function loadFirebaseTools() {
-        if (!window.BodySeoulFirebase?.load) {
-            return Promise.resolve({ ready: false, reason: "Firebase loader missing" });
-        }
-
-        return withTimeout(
-            window.BodySeoulFirebase.load(),
-            FIREBASE_TIMEOUT_MS,
-            "Firebase a mis trop de temps à répondre."
-        ).catch(error => {
-            console.warn("Body & Seoul Firebase skipped", error);
-            return { ready: false, reason: error.message };
-        });
-    }
-
-    function saveOrder(firebaseTools, orderId, order) {
-        if (!firebaseTools?.ready) {
-            return Promise.resolve(false);
-        }
-
-        return withTimeout(
-            firebaseTools.db.collection("orders").doc(orderId).set(order).then(() => true),
-            FIREBASE_TIMEOUT_MS,
-            "La sauvegarde Firebase a mis trop de temps."
-        ).catch(error => {
-            console.warn("Body & Seoul order save skipped", error);
-            return false;
-        });
-    }
-
-    function buildEmailData(orderId, customer, items, orderTotal) {
-        const data = {
-            "_subject": "Nouvelle commande Body & Seoul - " + orderId,
-            "_captcha": "false",
-            "_template": "table",
-            "Commande ID": orderId,
-            "Nom complet": customer.name,
-            "Téléphone": customer.phone,
-            "Email": customer.email || "Non renseigné",
-            "Adresse": customer.address,
-            "Notes": customer.notes || "-",
-            "Produits": orderLines(items),
-            "Total": orderTotal + " DHS"
-        };
+        formData.append("_subject", "Nouvelle commande Body & Seoul - " + orderId);
+        formData.append("_captcha", "false");
+        formData.append("_template", "table");
+        formData.append("Commande ID", orderId);
+        formData.append("Nom complet", customer.name);
+        formData.append("Téléphone", customer.phone);
+        formData.append("Email", customer.email || "Non renseigné");
+        formData.append("Adresse", customer.address);
+        formData.append("Notes", customer.notes || "-");
+        formData.append("Produits", lines);
+        formData.append("Total", orderTotal + " DHS");
 
         if (customer.email) {
-            data.email = customer.email;
-            data._autoresponse = "Merci pour votre commande Body & Seoul. Nous l'avons bien reçue et nous vous contacterons bientôt pour confirmer la livraison.";
+            formData.append("email", customer.email);
+            formData.append("_autoresponse", "Merci pour votre commande Body & Seoul. Nous l'avons bien reçue et nous vous contacterons bientôt pour confirmer la livraison.");
         }
 
-        return data;
-    }
-
-    function formDataFromObject(data) {
-        const formData = new FormData();
-        Object.entries(data).forEach(([key, value]) => formData.append(key, value));
-        return formData;
-    }
-
-    function sendOrderEmailAjax(data) {
-        const controller = window.AbortController ? new AbortController() : null;
-        const timeoutId = controller ? setTimeout(() => controller.abort(), EMAIL_TIMEOUT_MS) : null;
-
-        return fetch(FORM_SUBMIT_AJAX_ENDPOINT, {
+        return fetch(FORM_SUBMIT_ENDPOINT, {
             method: "POST",
             headers: { "Accept": "application/json" },
-            body: formDataFromObject(data),
-            signal: controller?.signal
+            body: formData
         }).then(response => {
             if (!response.ok) {
                 throw new Error("L'email de commande n'a pas pu être envoyé.");
             }
             return response.json().catch(() => ({}));
-        }).finally(() => {
-            if (timeoutId) clearTimeout(timeoutId);
         });
-    }
-
-    function sendOrderEmailFallback(data) {
-        if (!navigator.sendBeacon) {
-            return Promise.reject(new Error("Le navigateur n'a pas pu envoyer la commande."));
-        }
-
-        const sent = navigator.sendBeacon(FORM_SUBMIT_FORM_ENDPOINT, formDataFromObject(data));
-        return sent
-            ? Promise.resolve({ fallback: "beacon" })
-            : Promise.reject(new Error("Le navigateur n'a pas pu envoyer la commande."));
-    }
-
-    function sendOrderEmail(orderId, customer, items, orderTotal) {
-        const data = buildEmailData(orderId, customer, items, orderTotal);
-
-        return sendOrderEmailAjax(data).catch(error => {
-            console.warn("Body & Seoul AJAX email failed, trying fallback", error);
-            return sendOrderEmailFallback(data);
-        });
-    }
-
-    function finishSuccessfulOrder() {
-        localStorage.removeItem("cart");
-        window.BodySeoulSync?.saveStateNow?.();
-        window.BodySeoulSync?.fetchOrders?.();
-        setOrderStatus("Commande envoyée avec succès. Nous vous contacterons bientôt.", "success");
-        if (window.renderCheckout) window.renderCheckout();
-        if (window.renderCart) window.renderCart();
     }
 
     function initOrders() {
@@ -211,17 +123,19 @@
                 return;
             }
 
-            const defaultButtonText = button.textContent;
             button.disabled = true;
-            button.textContent = "Envoi de la commande...";
             setOrderStatus("Envoi de la commande...", "info");
 
-            const orderId = makeOrderId();
-            const items = normalizeItems(cart);
-            const orderTotal = total(cart);
+            window.BodySeoulFirebase.load().then(firebaseTools => {
+                if (!firebaseTools.ready) {
+                    setOrderStatus("Firebase n'est pas encore configuré. La commande n'a pas été envoyée.", "error");
+                    button.disabled = false;
+                    return;
+                }
 
-            loadFirebaseTools().then(firebaseTools => {
-                const user = firebaseTools.ready ? firebaseTools.auth.currentUser : null;
+                const user = firebaseTools.auth.currentUser;
+                const items = normalizeItems(cart);
+                const orderTotal = total(cart);
                 const order = {
                     customer,
                     items,
@@ -231,17 +145,24 @@
                     userEmail: user ? user.email : null,
                     emailStatus: "formsubmit_pending",
                     stockStatus: "manual",
-                    createdAt: firebaseTools.ready ? firebase.firestore.FieldValue.serverTimestamp() : new Date().toISOString()
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
 
-                return saveOrder(firebaseTools, orderId, order)
-                    .then(() => sendOrderEmail(orderId, customer, items, orderTotal));
-            }).then(finishSuccessfulOrder).catch(error => {
+                return saveOrder(firebaseTools, order)
+                    .then(orderId => sendOrderEmail(orderId, customer, items, orderTotal).then(() => orderId))
+                    .then(orderId => {
+                        localStorage.removeItem("cart");
+                        window.BodySeoulSync?.saveStateNow?.();
+                        window.BodySeoulSync?.fetchOrders?.();
+                        setOrderStatus("Commande envoyée avec succès. Nous vous contacterons bientôt.", "success");
+                        if (window.renderCheckout) window.renderCheckout();
+                        if (window.renderCart) window.renderCart();
+                    });
+            }).catch(error => {
                 console.error(error);
                 setOrderStatus(error.message || "Impossible d'envoyer la commande. Réessayez.", "error");
             }).finally(() => {
                 button.disabled = false;
-                button.textContent = defaultButtonText;
             });
         });
     }
