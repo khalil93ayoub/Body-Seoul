@@ -1,4 +1,6 @@
 (function () {
+    const FORM_SUBMIT_ENDPOINT = "https://formsubmit.co/ajax/bf3603cc019d5aa8703d667ae52736ca";
+
     function readCart() {
         try {
             return JSON.parse(localStorage.getItem("cart") || "[]");
@@ -60,38 +62,48 @@
         })).filter(item => item.id && item.quantity > 0);
     }
 
-    function saveOrderAndStock(firebaseTools, order, items) {
-        const db = firebaseTools.db;
-        const orderRef = db.collection("orders").doc();
+    function orderLines(items) {
+        return items.map(item => {
+            const quantity = Number(item.quantity) || 1;
+            return item.title + " x " + quantity + " - " + (priceToNumber(item.price) * quantity) + " DHS";
+        }).join("\n");
+    }
 
-        return db.runTransaction(transaction => {
-            const productRefs = items.map(item => db.collection("products").doc(item.id));
+    function saveOrder(firebaseTools, order) {
+        const orderRef = firebaseTools.db.collection("orders").doc();
+        return orderRef.set(order).then(() => orderRef.id);
+    }
 
-            return Promise.all(productRefs.map(ref => transaction.get(ref))).then(snapshots => {
-                snapshots.forEach((snapshot, index) => {
-                    const item = items[index];
-                    const available = Number(snapshot.data()?.quantity || 0);
+    function sendOrderEmail(orderId, customer, items, orderTotal) {
+        const formData = new FormData();
+        const lines = orderLines(items);
 
-                    if (!snapshot.exists) {
-                        throw new Error("Le produit " + item.title + " n'a pas encore de stock configuré.");
-                    }
+        formData.append("_subject", "Nouvelle commande Body & Seoul - " + orderId);
+        formData.append("_captcha", "false");
+        formData.append("_template", "table");
+        formData.append("Commande ID", orderId);
+        formData.append("Nom complet", customer.name);
+        formData.append("Téléphone", customer.phone);
+        formData.append("Email", customer.email || "Non renseigné");
+        formData.append("Adresse", customer.address);
+        formData.append("Notes", customer.notes || "-");
+        formData.append("Produits", lines);
+        formData.append("Total", orderTotal + " DHS");
 
-                    if (available < item.quantity) {
-                        throw new Error("Stock insuffisant pour " + item.title + ". Disponible : " + available + ".");
-                    }
-                });
+        if (customer.email) {
+            formData.append("email", customer.email);
+            formData.append("_autoresponse", "Merci pour votre commande Body & Seoul. Nous l'avons bien reçue et nous vous contacterons bientôt pour confirmer la livraison.");
+        }
 
-                snapshots.forEach((snapshot, index) => {
-                    const item = items[index];
-                    const nextQuantity = Number(snapshot.data().quantity || 0) - item.quantity;
-                    transaction.update(productRefs[index], {
-                        quantity: nextQuantity,
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                });
-
-                transaction.set(orderRef, order);
-            });
+        return fetch(FORM_SUBMIT_ENDPOINT, {
+            method: "POST",
+            headers: { "Accept": "application/json" },
+            body: formData
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error("L'email de commande n'a pas pu être envoyé.");
+            }
+            return response.json().catch(() => ({}));
         });
     }
 
@@ -123,25 +135,29 @@
 
                 const user = firebaseTools.auth.currentUser;
                 const items = normalizeItems(cart);
+                const orderTotal = total(cart);
                 const order = {
                     customer,
                     items,
-                    total: total(cart),
+                    total: orderTotal,
                     status: "new",
                     userId: user ? user.uid : null,
                     userEmail: user ? user.email : null,
-                    emailStatus: "pending",
+                    emailStatus: "formsubmit_pending",
+                    stockStatus: "manual",
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
 
-                return saveOrderAndStock(firebaseTools, order, items).then(() => {
-                    localStorage.removeItem("cart");
-                    window.BodySeoulSync?.saveStateNow?.();
-                    window.BodySeoulSync?.fetchOrders?.();
-                    setOrderStatus("Commande confirmée. Le stock a été mis à jour.", "success");
-                    if (window.renderCheckout) window.renderCheckout();
-                    if (window.renderCart) window.renderCart();
-                });
+                return saveOrder(firebaseTools, order)
+                    .then(orderId => sendOrderEmail(orderId, customer, items, orderTotal).then(() => orderId))
+                    .then(orderId => {
+                        localStorage.removeItem("cart");
+                        window.BodySeoulSync?.saveStateNow?.();
+                        window.BodySeoulSync?.fetchOrders?.();
+                        setOrderStatus("Commande envoyée avec succès. Nous vous contacterons bientôt.", "success");
+                        if (window.renderCheckout) window.renderCheckout();
+                        if (window.renderCart) window.renderCart();
+                    });
             }).catch(error => {
                 console.error(error);
                 setOrderStatus(error.message || "Impossible d'envoyer la commande. Réessayez.", "error");

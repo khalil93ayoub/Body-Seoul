@@ -164,7 +164,7 @@
             </section>
 
             <section class="mobile-home-section">
-                ${sectionHeader("Nos meilleures ventes", "/categories/all-products.html")}
+                ${sectionHeader("Nos meilleures ventes", "/categories/best-sellers.html")}
                 <div class="mobile-horizontal-products">
                     ${bestSellers.map(product => productCard(product, true)).join("")}
                 </div>
