@@ -40,9 +40,10 @@
         const element = ensureStockElement();
         if (!element) return;
 
+        const language = window.BodySeoulLanguage?.getLanguage?.() || "fr";
         element.textContent = currentStock > 0
-            ? currentStock + " produits disponibles"
-            : "Rupture de stock";
+            ? (language === "ar" ? "متوفر" : "Disponible")
+            : (language === "ar" ? "غير متوفر" : "Rupture de stock");
         element.dataset.stock = currentStock > 0 ? "available" : "empty";
         setButtonsState(currentStock);
     }

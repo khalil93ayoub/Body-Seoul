@@ -129,7 +129,7 @@ function loadLanguageSwitcher() {
     }
 
     const script = document.createElement("script");
-    script.src = componentBase + "js/language.js?v=20260607a";
+    script.src = componentBase + "js/language.js?v=20260607b";
     script.onload = () => {
         if (window.BodySeoulLanguage) {
             window.BodySeoulLanguage.init();
@@ -188,7 +188,7 @@ function loadShopCoreScripts() {
             loadScriptOnce(componentBase + "js/firebase-sync.js?v=20260522d", () => {
                 window.BodySeoulSync?.init?.();
                 loadScriptOnce(componentBase + "js/account.js?v=20260522f", () => window.BodySeoulAccount?.init());
-                loadScriptOnce(componentBase + "js/stock.js?v=20260522a", () => window.BodySeoulStock?.init());
+                loadScriptOnce(componentBase + "js/stock.js?v=20260607b", () => window.BodySeoulStock?.init());
                 if (document.getElementById("orders-history-list")) {
                     loadScriptOnce(componentBase + "js/orders-history.js?v=20260522a", () => window.BodySeoulOrdersHistory?.init());
                 }
