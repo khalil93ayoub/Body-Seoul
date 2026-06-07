@@ -129,7 +129,7 @@ function loadLanguageSwitcher() {
     }
 
     const script = document.createElement("script");
-    script.src = componentBase + "js/language.js?v=20260521a";
+    script.src = componentBase + "js/language.js?v=20260607a";
     script.onload = () => {
         if (window.BodySeoulLanguage) {
             window.BodySeoulLanguage.init();
@@ -147,7 +147,7 @@ function loadMobileEnhancements() {
     }
 
     const script = document.createElement("script");
-    script.src = componentBase + "js/mobile.js?v=20260520d";
+    script.src = componentBase + "js/mobile.js?v=20260607a";
     script.onload = () => {
         if (window.BodySeoulMobile) {
             window.BodySeoulMobile.init();
@@ -194,7 +194,7 @@ function loadShopCoreScripts() {
                 }
 
                 if (document.querySelector(".checkout-button")) {
-                    loadScriptOnce(componentBase + "js/orders.js?v=20260606c", () => window.BodySeoulOrders?.init());
+                    loadScriptOnce(componentBase + "js/orders.js?v=20260607a", () => window.BodySeoulOrders?.init());
                 }
             });
         });

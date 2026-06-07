@@ -1697,3 +1697,27 @@ html[dir="rtl"] .category-toolbar {
         display: block;
     }
 }
+
+
+.product-price-block {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.product-price-block .product-price {
+    margin-bottom: 0;
+}
+
+.product-old-price {
+    color: #999;
+    font-size: 17px;
+    font-weight: 500;
+    text-decoration: line-through;
+}
+
+html[dir="rtl"] .product-price-block {
+    justify-content: flex-end;
+}

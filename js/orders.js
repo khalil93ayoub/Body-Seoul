@@ -1,5 +1,7 @@
 (function () {
     const FORM_SUBMIT_ENDPOINT = "https://formsubmit.co/ajax/bf3603cc019d5aa8703d667ae52736ca";
+    const DELIVERY_FEE = 40;
+    const FREE_DELIVERY_THRESHOLD = 500;
 
     function readCart() {
         try {
@@ -15,6 +17,10 @@
 
     function total(cart) {
         return cart.reduce((sum, item) => sum + priceToNumber(item.price) * (Number(item.quantity) || 1), 0);
+    }
+
+    function deliveryFeeForSubtotal(subtotal) {
+        return subtotal > 0 && subtotal < FREE_DELIVERY_THRESHOLD ? DELIVERY_FEE : 0;
     }
 
     function productId(item) {
@@ -74,7 +80,7 @@
         return orderRef.set(order).then(() => orderRef.id);
     }
 
-    function sendOrderEmail(orderId, customer, items, orderTotal) {
+    function sendOrderEmail(orderId, customer, items, subtotal, deliveryFee, orderTotal) {
         const formData = new FormData();
         const lines = orderLines(items);
 
@@ -88,6 +94,8 @@
         formData.append("Adresse", customer.address);
         formData.append("Notes", customer.notes || "-");
         formData.append("Produits", lines);
+        formData.append("Sous-total", subtotal + " DHS");
+        formData.append("Frais de livraison", deliveryFee ? deliveryFee + " DHS" : "Offerte");
         formData.append("Total", orderTotal + " DHS");
 
         if (customer.email) {
@@ -135,10 +143,14 @@
 
                 const user = firebaseTools.auth.currentUser;
                 const items = normalizeItems(cart);
-                const orderTotal = total(cart);
+                const subtotal = total(cart);
+                const deliveryFee = deliveryFeeForSubtotal(subtotal);
+                const orderTotal = subtotal + deliveryFee;
                 const order = {
                     customer,
                     items,
+                    subtotal,
+                    deliveryFee,
                     total: orderTotal,
                     status: "new",
                     userId: user ? user.uid : null,
@@ -149,7 +161,7 @@
                 };
 
                 return saveOrder(firebaseTools, order)
-                    .then(orderId => sendOrderEmail(orderId, customer, items, orderTotal).then(() => orderId))
+                    .then(orderId => sendOrderEmail(orderId, customer, items, subtotal, deliveryFee, orderTotal).then(() => orderId))
                     .then(orderId => {
                         localStorage.removeItem("cart");
                         window.BodySeoulSync?.saveStateNow?.();

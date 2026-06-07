@@ -106,6 +106,7 @@
         const normalized = normalizeProduct(product);
         const rating = product.rating || "4.8";
         const reviews = product.reviews || "276";
+        const oldPrice = product.oldPrice ? `<del>${product.oldPrice}</del>` : "";
 
         return `
             <article class="mobile-product-card${compact ? " is-compact" : ""}">
@@ -119,7 +120,7 @@
                     <p>${product.brand || "BODY & SEOUL"}</p>
                     <a href="${normalized.link}">${normalized.title}</a>
                     <span><i class="fa-solid fa-star"></i> ${rating} (${reviews})</span>
-                    <strong>${normalized.price} DHS</strong>
+                    <div class="mobile-card-price">${oldPrice}<strong>${normalized.price} DHS</strong></div>
                 </div>
                 <button type="button" class="mobile-card-cart" data-mobile-cart="${normalized.id}" aria-label="Ajouter au panier">
                     <i class="fa-solid fa-cart-shopping"></i>

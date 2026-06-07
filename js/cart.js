@@ -47,6 +47,8 @@ const cartContainer =
 const totalPriceElement = document.getElementById("cart-total");
 const checkoutProducts = document.getElementById("checkout-products");
 const checkoutTotalPrice = document.getElementById("checkout-total-price");
+const DELIVERY_FEE = 40;
+const FREE_DELIVERY_THRESHOLD = 500;
 
 let cart = readCart();
 
@@ -194,6 +196,58 @@ function cartTotal() {
         sum + priceToNumber(product.price) * (Number(product.quantity) || 1),
         0
     );
+}
+
+function deliveryFeeForSubtotal(subtotal) {
+    return subtotal > 0 && subtotal < FREE_DELIVERY_THRESHOLD ? DELIVERY_FEE : 0;
+}
+
+function checkoutGrandTotal() {
+    const subtotal = cartTotal();
+    return subtotal + deliveryFeeForSubtotal(subtotal);
+}
+
+function removeCheckoutFeeRows() {
+    document.getElementById("checkout-subtotal-row")?.remove();
+    document.getElementById("checkout-delivery-row")?.remove();
+}
+
+function ensureCheckoutFeeRow(id, label) {
+    const totalBox = checkoutTotalPrice?.closest(".checkout-total");
+    if (!totalBox) return null;
+
+    let row = document.getElementById(id);
+    if (!row) {
+        row = document.createElement("div");
+        row.className = "checkout-fee-row";
+        row.id = id;
+        row.innerHTML = "<span></span><strong></strong>";
+        totalBox.insertAdjacentElement("beforebegin", row);
+    }
+
+    row.querySelector("span").textContent = label;
+    return row;
+}
+
+function renderCheckoutFees() {
+    const subtotal = cartTotal();
+    const deliveryFee = deliveryFeeForSubtotal(subtotal);
+
+    if (!subtotal) {
+        removeCheckoutFeeRows();
+        return;
+    }
+
+    const subtotalRow = ensureCheckoutFeeRow("checkout-subtotal-row", "Sous-total");
+    const deliveryRow = ensureCheckoutFeeRow("checkout-delivery-row", "Frais de livraison");
+
+    if (subtotalRow) {
+        subtotalRow.querySelector("strong").textContent = subtotal + " DHS";
+    }
+
+    if (deliveryRow) {
+        deliveryRow.querySelector("strong").textContent = deliveryFee ? deliveryFee + " DHS" : "Offerte";
+    }
 }
 
 function addToCart(productOrId, amount = 1) {
@@ -360,6 +414,7 @@ function renderCheckout() {
 
     if (cart.length === 0) {
         checkoutProducts.innerHTML = '<p class="empty-cart">Votre panier est vide.</p>';
+        removeCheckoutFeeRows();
         checkoutTotalPrice.innerText = "0 DHS";
         return;
     }
@@ -368,7 +423,8 @@ function renderCheckout() {
         checkoutProducts.appendChild(createLineItem(product, { checkout: true }));
     });
 
-    checkoutTotalPrice.innerText = cartTotal() + " DHS";
+    renderCheckoutFees();
+    checkoutTotalPrice.innerText = checkoutGrandTotal() + " DHS";
 }
 
 renderCart();
@@ -384,6 +440,11 @@ try {
     window.productIdFromLink = productIdFromLink;
     window.normalizeId = normalizeId;
     window.normalizeProduct = normalizeProduct;
+    window.BodySeoulCheckoutTotals = {
+        deliveryFee: deliveryFeeForSubtotal,
+        grandTotal: checkoutGrandTotal,
+        threshold: FREE_DELIVERY_THRESHOLD
+    };
 } catch (error) {
     // Function declarations remain available to inline handlers in normal browsers.
 }
