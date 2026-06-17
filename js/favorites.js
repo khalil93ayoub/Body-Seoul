@@ -84,6 +84,7 @@ function favoriteAddToCart(product) {
         cart.push({ ...product, quantity: 1 });
     }
     favoriteStorage.setItem("cart", JSON.stringify(cart));
+    window.BodySeoulMeta?.trackAddToCart?.(product, 1);
     window.BodySeoulSync?.schedulePush?.();
     window.initHeaderDropdowns?.();
 }

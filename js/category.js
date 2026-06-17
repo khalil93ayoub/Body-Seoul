@@ -155,6 +155,7 @@ function addCategoryCart(product) {
     }
 
     saveList("cart", cart);
+    window.BodySeoulMeta?.trackAddToCart?.(normalized, 1);
     window.initHeaderDropdowns?.();
     alert(window.BodySeoulLanguage?.getLanguage?.() === "ar" ? "تمت إضافة المنتج إلى السلة!" : "Produit ajouté au panier !");
 }

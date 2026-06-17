@@ -273,6 +273,7 @@ function addToCart(productOrId, amount = 1) {
     saveCart();
     renderCart();
     renderCheckout();
+    window.BodySeoulMeta?.trackAddToCart?.(product, quantityToAdd);
     alert(window.BodySeoulLanguage?.getLanguage?.() === "ar" ? "تمت إضافة المنتج إلى السلة!" : "Produit ajouté au panier !");
 }
 

@@ -8,25 +8,10 @@ Created locally:
 - `firestore.rules`
 - `firestore.indexes.json`
 - `js/firebase-config.js` with the Web app config
-- `firebase-functions/` email function template
 
 Collections used:
 - `customers/{uid}` for registered account profiles
 - `orders/{orderId}` for checkout orders
+- `products/{productId}` for stock and sold counters
 
-Email confirmations require SMTP config before deploying functions:
-
-```bash
-cd /Users/ayoubkhalil/Downloads/Body-Seoul-main
-firebase functions:config:set \
-  mail.host="smtp.example.com" \
-  mail.port="587" \
-  mail.secure="false" \
-  mail.user="SMTP_USER" \
-  mail.pass="SMTP_PASSWORD" \
-  mail.from="Body & Seoul <orders@bodyandseoul.ma>" \
-  mail.owner="YOUR_SHOP_EMAIL@example.com"
-firebase deploy --only functions
-```
-
-Do not place SMTP passwords in frontend JavaScript.
+Email confirmations are currently handled by FormSubmit from the checkout page, so Firebase Cloud Functions are not used. Do not place passwords or private keys in frontend JavaScript.

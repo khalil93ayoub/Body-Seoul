@@ -232,6 +232,7 @@ function addCurrentProductToCart() {
     }
 
     saveList("cart", cart);
+    window.BodySeoulMeta?.trackAddToCart?.(product, quantity);
     window.initHeaderDropdowns?.();
     alert(window.BodySeoulLanguage?.getLanguage?.() === "ar" ? "تمت إضافة المنتج إلى السلة!" : "Produit ajouté au panier !");
 }

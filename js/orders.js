@@ -163,6 +163,7 @@
                 return saveOrder(firebaseTools, order)
                     .then(orderId => sendOrderEmail(orderId, customer, items, subtotal, deliveryFee, orderTotal).then(() => orderId))
                     .then(orderId => {
+                        window.BodySeoulMeta?.trackOrder?.(orderId, items, orderTotal);
                         localStorage.removeItem("cart");
                         window.BodySeoulSync?.saveStateNow?.();
                         window.BodySeoulSync?.fetchOrders?.();

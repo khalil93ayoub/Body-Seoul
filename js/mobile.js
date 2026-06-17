@@ -78,6 +78,7 @@
         }
 
         saveList(storageKeyCart, cart);
+        window.BodySeoulMeta?.trackAddToCart?.(normalized, 1);
         alert(window.BodySeoulLanguage?.getLanguage?.() === "ar" ? "تمت إضافة المنتج إلى السلة!" : "Produit ajouté au panier !");
     }
 
