@@ -147,7 +147,7 @@ function loadMobileEnhancements() {
     }
 
     const script = document.createElement("script");
-    script.src = componentBase + "js/mobile.js?v=20260617a";
+    script.src = componentBase + "js/mobile.js?v=20260618a";
     script.onload = () => {
         if (window.BodySeoulMobile) {
             window.BodySeoulMobile.init();
@@ -182,7 +182,6 @@ function loadScriptOnce(src, callback) {
 }
 
 function loadShopCoreScripts() {
-    loadScriptOnce(componentBase + "js/meta-pixel.js?v=20260617a", () => window.BodySeoulMeta?.init?.());
 
     loadScriptOnce(componentBase + "js/firebase-config.js?v=20260521a", () => {
         loadScriptOnce(componentBase + "js/firebase-app.js?v=20260521a", () => {
@@ -196,7 +195,7 @@ function loadShopCoreScripts() {
                 }
 
                 if (document.querySelector(".checkout-button")) {
-                    loadScriptOnce(componentBase + "js/orders.js?v=20260617a", () => window.BodySeoulOrders?.init());
+                    loadScriptOnce(componentBase + "js/orders.js?v=20260618a", () => window.BodySeoulOrders?.init());
                 }
             });
         });

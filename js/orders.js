@@ -74,6 +74,71 @@
             return item.title + " x " + quantity + " - " + (priceToNumber(item.price) * quantity) + " DHS";
         }).join("\n");
     }
+    const ORDER_EVENT_STORAGE_KEY = "body_seoul_tracked_orders";
+
+    function metaOrderPayload(items, orderTotal) {
+        const normalizedItems = (Array.isArray(items) ? items : [])
+            .map(item => ({
+                id: productId(item),
+                title: item.title || item.name || productId(item),
+                price: priceToNumber(item.price),
+                quantity: Number(item.quantity) || 1
+            }))
+            .filter(item => item.id && item.quantity > 0);
+
+        if (!normalizedItems.length) {
+            return null;
+        }
+
+        return {
+            content_ids: normalizedItems.map(item => item.id),
+            contents: normalizedItems.map(item => ({
+                id: item.id,
+                quantity: item.quantity,
+                item_price: item.price
+            })),
+            content_type: "product",
+            currency: "MAD",
+            value: Number(orderTotal) || normalizedItems.reduce((sum, item) => sum + item.price * item.quantity, 0),
+            num_items: normalizedItems.reduce((sum, item) => sum + item.quantity, 0)
+        };
+    }
+
+    function trackedOrderIds() {
+        try {
+            return JSON.parse(localStorage.getItem(ORDER_EVENT_STORAGE_KEY) || "[]");
+        } catch (error) {
+            return [];
+        }
+    }
+
+    function rememberTrackedOrder(orderId) {
+        const nextIds = Array.from(new Set(trackedOrderIds().concat(orderId))).slice(-30);
+        localStorage.setItem(ORDER_EVENT_STORAGE_KEY, JSON.stringify(nextIds));
+    }
+
+    function trackMetaOrder(orderId, items, orderTotal) {
+        const id = String(orderId || "").trim();
+
+        if (!id || typeof fbq !== "function" || trackedOrderIds().includes(id)) {
+            return;
+        }
+
+        const payload = metaOrderPayload(items, orderTotal);
+
+        if (!payload) {
+            return;
+        }
+
+        rememberTrackedOrder(id);
+        fbq("trackCustom", "Order", {
+            ...payload,
+            order_id: id
+        }, {
+            eventID: id
+        });
+    }
+
 
     function saveOrder(firebaseTools, order) {
         const orderRef = firebaseTools.db.collection("orders").doc();
@@ -163,7 +228,7 @@
                 return saveOrder(firebaseTools, order)
                     .then(orderId => sendOrderEmail(orderId, customer, items, subtotal, deliveryFee, orderTotal).then(() => orderId))
                     .then(orderId => {
-                        window.BodySeoulMeta?.trackOrder?.(orderId, items, orderTotal);
+                        trackMetaOrder(orderId, items, orderTotal);
                         localStorage.removeItem("cart");
                         window.BodySeoulSync?.saveStateNow?.();
                         window.BodySeoulSync?.fetchOrders?.();

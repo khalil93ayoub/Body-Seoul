@@ -146,6 +146,7 @@ function enhanceProductDetailLayout() {
 document.addEventListener("DOMContentLoaded", () => {
     updateQuantityValue();
     enhanceProductDetailLayout();
+    trackCurrentProductViewContent();
 });
 
 function sharedStorage() {
@@ -212,6 +213,61 @@ function currentProductForActions() {
         link: location.href
     };
 }
+function productMetaPayload(product, itemQuantity = 1) {
+    if (!product) {
+        return null;
+    }
+
+    const quantityValue = Number(itemQuantity) || 1;
+    const priceValue = numericPrice(product.price);
+    const productId = String(product.id || product.title || product.name || "").trim();
+
+    if (!productId) {
+        return null;
+    }
+
+    return {
+        content_ids: [productId],
+        content_name: product.title || product.name || productId,
+        contents: [{
+            id: productId,
+            quantity: quantityValue,
+            item_price: priceValue
+        }],
+        content_type: "product",
+        currency: "MAD",
+        value: priceValue * quantityValue,
+        num_items: quantityValue
+    };
+}
+
+function trackProductMetaEvent(eventName, product, itemQuantity = 1) {
+    if (typeof fbq !== "function") {
+        return;
+    }
+
+    const payload = productMetaPayload(product, itemQuantity);
+
+    if (payload) {
+        fbq("track", eventName, payload);
+    }
+}
+
+function trackCurrentProductViewContent() {
+    if (document.body.dataset.metaViewContentTracked === "true") {
+        return;
+    }
+
+    const product = currentProductForActions();
+    const payload = productMetaPayload(product, 1);
+
+    if (!payload || typeof fbq !== "function") {
+        return;
+    }
+
+    document.body.dataset.metaViewContentTracked = "true";
+    fbq("track", "ViewContent", payload);
+}
 
 
 function addCurrentProductToCart() {
@@ -232,7 +288,7 @@ function addCurrentProductToCart() {
     }
 
     saveList("cart", cart);
-    window.BodySeoulMeta?.trackAddToCart?.(product, quantity);
+    trackProductMetaEvent("AddToCart", product, quantity);
     window.initHeaderDropdowns?.();
     alert(window.BodySeoulLanguage?.getLanguage?.() === "ar" ? "تمت إضافة المنتج إلى السلة!" : "Produit ajouté au panier !");
 }

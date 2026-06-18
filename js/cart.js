@@ -125,6 +125,79 @@ function priceToNumber(price) {
     return Number(value || 0);
 }
 
+function metaCartItemsPayload(items, valueOverride) {
+    const normalizedItems = (Array.isArray(items) ? items : [])
+        .map(item => ({
+            id: String(item.id || item.title || item.name || "").trim(),
+            title: item.title || item.name || item.id || "Produit",
+            price: priceToNumber(item.price),
+            quantity: Number(item.quantity) || 1
+        }))
+        .filter(item => item.id && item.quantity > 0);
+
+    if (!normalizedItems.length) {
+        return null;
+    }
+
+    const value = typeof valueOverride === "number"
+        ? valueOverride
+        : normalizedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+    const payload = {
+        content_ids: normalizedItems.map(item => item.id),
+        contents: normalizedItems.map(item => ({
+            id: item.id,
+            quantity: item.quantity,
+            item_price: item.price
+        })),
+        content_type: "product",
+        currency: "MAD",
+        value,
+        num_items: normalizedItems.reduce((sum, item) => sum + item.quantity, 0)
+    };
+
+    if (normalizedItems.length === 1) {
+        payload.content_name = normalizedItems[0].title;
+    }
+
+    return payload;
+}
+
+function trackMetaCartEvent(eventName, items, valueOverride) {
+    if (typeof fbq !== "function") {
+        return;
+    }
+
+    const payload = metaCartItemsPayload(items, valueOverride);
+
+    if (payload) {
+        fbq("track", eventName, payload);
+    }
+}
+
+function trackMetaAddToCart(product, quantity = 1) {
+    trackMetaCartEvent("AddToCart", [{ ...product, quantity }]);
+}
+
+function trackMetaInitiateCheckout() {
+    if (!checkoutProducts || document.body.dataset.metaInitiateCheckoutTracked === "true") {
+        return;
+    }
+
+    const items = cart.map(item => ({
+        ...item,
+        quantity: Number(item.quantity) || 1
+    }));
+
+    if (!items.length) {
+        return;
+    }
+
+    document.body.dataset.metaInitiateCheckoutTracked = "true";
+    trackMetaCartEvent("InitiateCheckout", items, checkoutGrandTotal());
+}
+
+
 function normalizeId(productId) {
     const rawId = String(productId || "").trim();
     return productAliases[rawId] || rawId;
@@ -273,7 +346,7 @@ function addToCart(productOrId, amount = 1) {
     saveCart();
     renderCart();
     renderCheckout();
-    window.BodySeoulMeta?.trackAddToCart?.(product, quantityToAdd);
+    trackMetaAddToCart(product, quantityToAdd);
     alert(window.BodySeoulLanguage?.getLanguage?.() === "ar" ? "تمت إضافة المنتج إلى السلة!" : "Produit ajouté au panier !");
 }
 
@@ -426,6 +499,7 @@ function renderCheckout() {
 
     renderCheckoutFees();
     checkoutTotalPrice.innerText = checkoutGrandTotal() + " DHS";
+    trackMetaInitiateCheckout();
 }
 
 renderCart();

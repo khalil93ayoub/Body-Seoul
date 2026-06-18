@@ -69,6 +69,35 @@ function favoritePriceToNumber(price) {
     return Number(String(price || "0").replace(/[^0-9]/g, "")) || 0;
 }
 
+function favoriteTrackAddToCart(product, quantity = 1) {
+    if (typeof fbq !== "function" || !product) {
+        return;
+    }
+
+    const quantityValue = Number(quantity) || 1;
+    const priceValue = favoritePriceToNumber(product.price);
+    const productId = String(product.id || product.title || product.name || "").trim();
+
+    if (!productId) {
+        return;
+    }
+
+    fbq("track", "AddToCart", {
+        content_ids: [productId],
+        content_name: product.title || product.name || productId,
+        contents: [{
+            id: productId,
+            quantity: quantityValue,
+            item_price: priceValue
+        }],
+        content_type: "product",
+        currency: "MAD",
+        value: priceValue * quantityValue,
+        num_items: quantityValue
+    });
+}
+
+
 function favoriteAddToCart(product) {
     if (typeof addToCart === "function") {
         addToCart(product);
@@ -84,7 +113,7 @@ function favoriteAddToCart(product) {
         cart.push({ ...product, quantity: 1 });
     }
     favoriteStorage.setItem("cart", JSON.stringify(cart));
-    window.BodySeoulMeta?.trackAddToCart?.(product, 1);
+    favoriteTrackAddToCart(product, 1);
     window.BodySeoulSync?.schedulePush?.();
     window.initHeaderDropdowns?.();
 }

@@ -48,6 +48,35 @@ function numericPrice(price) {
     return Number(String(price || "0").replace(/[^0-9]/g, "")) || 0;
 }
 
+function trackCategoryAddToCart(product, quantity = 1) {
+    if (typeof fbq !== "function" || !product) {
+        return;
+    }
+
+    const quantityValue = Number(quantity) || 1;
+    const priceValue = numericPrice(product.price);
+    const productId = String(product.id || product.title || product.name || "").trim();
+
+    if (!productId) {
+        return;
+    }
+
+    fbq("track", "AddToCart", {
+        content_ids: [productId],
+        content_name: product.title || product.name || productId,
+        contents: [{
+            id: productId,
+            quantity: quantityValue,
+            item_price: priceValue
+        }],
+        content_type: "product",
+        currency: "MAD",
+        value: priceValue * quantityValue,
+        num_items: quantityValue
+    });
+}
+
+
 const grid = document.getElementById("productsGrid");
 const productCount = document.getElementById("productCount");
 let salesByProductId = {};
@@ -155,7 +184,7 @@ function addCategoryCart(product) {
     }
 
     saveList("cart", cart);
-    window.BodySeoulMeta?.trackAddToCart?.(normalized, 1);
+    trackCategoryAddToCart(normalized, 1);
     window.initHeaderDropdowns?.();
     alert(window.BodySeoulLanguage?.getLanguage?.() === "ar" ? "تمت إضافة المنتج إلى السلة!" : "Produit ajouté au panier !");
 }
