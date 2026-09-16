@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Packs - Body & Seoul</title>
+    <meta name="description" content="Découvrez les packs skincare Body & Seoul et économisez 15% sur vos routines préférées.">
+    <link rel="stylesheet" href="../css/base.css?v=20260520n">
+    <link rel="stylesheet" href="../css/layout.css?v=20260520n">
+    <link rel="stylesheet" href="../css/components.css?v=20260607a">
+    <link rel="stylesheet" href="../css/product.css?v=20260916a">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div id="header-container"></div>
+    <div id="navbar-container"></div>
+
+    <section class="category-page">
+        <div class="category-header">
+            <div class="category-info">
+                <nav class="breadcrumb breadcrumb-links" aria-label="Fil d'Ariane">
+                    <a href="../index.html">Accueil</a>
+                    <span>›</span>
+                    <span>Packs</span>
+                </nav>
+                <h1>Packs</h1>
+                <p>Des routines composées avec soin pour associer vos essentiels skincare et économiser 15%.</p>
+                <span id="productCount">0 produits trouvés</span>
+            </div>
+            <div class="category-banner pack-category-banner">
+                <div class="category-banner-text">
+                    <h2>Votre routine complète, à prix doux</h2>
+                    <a href="#productsGrid">DÉCOUVRIR LES PACKS <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+                <img src="../images/hero-girls.png" alt="Packs skincare coréens">
+            </div>
+        </div>
+
+        <div class="category-content packs-category-content">
+            <main class="category-products">
+                <div class="category-toolbar">
+                    <label for="categorySort">Trier par :</label>
+                    <select id="categorySort">
+                        <option>Meilleures ventes</option>
+                        <option>Prix croissant</option>
+                        <option>Prix décroissant</option>
+                        <option>Nouveautés</option>
+                    </select>
+                </div>
+                <div id="productsGrid" class="category-products-grid"></div>
+            </main>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+    <script src="../js/products-data.js?v=20260916a"></script>
+    <script src="../js/cart.js?v=20260618a"></script>
+    <script src="../js/favorites.js?v=20260618a"></script>
+    <script>const currentCategory = "packs";</script>
+    <script src="../js/category.js?v=20260916a"></script>
+    <script src="../js/components-loader.js?v=20260916a" data-base="../"></script>
+</body>
+</html>

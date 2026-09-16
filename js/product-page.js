@@ -76,6 +76,7 @@ function normalizeText(value) {
 function ensureProductBadges() {
     const details = document.querySelector(".product-details");
     const brand = document.querySelector(".product-brand");
+    const isPack = document.body.dataset.packPage === "true";
 
     if (!details || !brand || details.querySelector(".product-badges")) {
         return;
@@ -83,7 +84,10 @@ function ensureProductBadges() {
 
     const badges = document.createElement("div");
     badges.className = "product-badges";
-    badges.innerHTML = `
+    badges.innerHTML = isPack ? `
+        <span class="product-badge">Pack exclusif</span>
+        <span class="product-badge secondary"><i class="fa-solid fa-tag"></i> -15%</span>
+    ` : `
         <span class="product-badge">Best-seller</span>
         <span class="product-badge secondary"><i class="fa-solid fa-leaf"></i> Vegan</span>
     `;
@@ -94,7 +98,7 @@ function ensureProductBadges() {
 function ensureProductSizeNote() {
     const price = document.querySelector(".product-price");
 
-    if (!price || document.querySelector(".product-size-note")) {
+    if (!price || document.body.dataset.packPage === "true" || document.querySelector(".product-size-note")) {
         return;
     }
 

@@ -205,8 +205,10 @@ function renderCategoryProducts() {
     filteredProducts.forEach((product, index) => {
         const productId = categoryProductId(product);
         const oldPrice = product.oldPrice ? '<del>' + product.oldPrice + '</del>' : '';
+        const packBadge = product.isPack ? '<span class="product-pack-badge">PACK -15%</span>' : '';
 
         grid.innerHTML += '<div class="category-product-card" data-index="' + index + '">' +
+            packBadge +
             '<button class="product-heart favorite-button" type="button" data-product="' + productId + '" aria-label="Ajouter aux favoris">' +
                 '<i class="fa-regular fa-heart"></i>' +
             '</button>' +
