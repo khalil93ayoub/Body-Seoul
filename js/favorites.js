@@ -70,7 +70,7 @@ function favoritePriceToNumber(price) {
 }
 
 function favoriteTrackAddToCart(product, quantity = 1) {
-    if (typeof fbq !== "function" || !product) {
+    if (!window.BodySeoulMeta || !product) {
         return;
     }
 
@@ -82,7 +82,7 @@ function favoriteTrackAddToCart(product, quantity = 1) {
         return;
     }
 
-    fbq("track", "AddToCart", {
+    window.BodySeoulMeta.send("track", "AddToCart", {
         content_ids: [productId],
         content_name: product.title || product.name || productId,
         contents: [{
@@ -182,6 +182,7 @@ function toggleFavorite(productOrId) {
     }
 
     saveFavorites();
+    window.BodySeoulMeta?.item(index === -1 ? "AddToWishlist" : "RemoveFromWishlist", product);
     updateFavoriteButtons();
     renderFavorites();
     window.initHeaderDropdowns?.();
@@ -204,7 +205,9 @@ function updateFavoriteButtons() {
 
 function removeFavorite(productId) {
     const id = favoriteId(productId);
+    const removed = normalizedFavorites().find(item => item.id === id);
     favorites = normalizedFavorites().filter(item => item.id !== id);
+    if (removed) window.BodySeoulMeta?.item("RemoveFromWishlist", removed);
     saveFavorites();
     renderFavorites();
     updateFavoriteButtons();

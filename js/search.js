@@ -66,6 +66,26 @@
 
         const close = () => panel.classList.remove("is-open");
 
+        let searchTimer;
+        let lastSearch = "";
+        const trackSearch = () => {
+            clearTimeout(searchTimer);
+            const query = input.value.trim();
+            if (query.length < 2 || query === lastSearch) return;
+            lastSearch = query;
+            // Send matching catalog IDs, never arbitrary typed text or personal data.
+            const matches = catalogProducts().filter(product => productMatches(product, query));
+            window.BodySeoulMeta?.send("track", "Search", {
+                content_type: "product",
+                content_ids: matches.slice(0, 20).map(product => product.id),
+                result_count: matches.length
+            });
+        };
+        input.addEventListener("input", () => {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(trackSearch, 800);
+        });
+        panel.addEventListener("click", trackSearch);
         input.addEventListener("focus", open);
         input.addEventListener("input", open);
         container.querySelector("i")?.addEventListener("click", () => {
@@ -75,6 +95,7 @@
 
         input.addEventListener("keydown", event => {
             if (event.key !== "Enter") return;
+            trackSearch();
             const first = panel.querySelector(".search-suggestion");
             if (first) {
                 window.location.href = first.href;

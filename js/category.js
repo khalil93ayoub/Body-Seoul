@@ -49,7 +49,7 @@ function numericPrice(price) {
 }
 
 function trackCategoryAddToCart(product, quantity = 1) {
-    if (typeof fbq !== "function" || !product) {
+    if (!window.BodySeoulMeta || !product) {
         return;
     }
 
@@ -61,7 +61,7 @@ function trackCategoryAddToCart(product, quantity = 1) {
         return;
     }
 
-    fbq("track", "AddToCart", {
+    window.BodySeoulMeta.send("track", "AddToCart", {
         content_ids: [productId],
         content_name: product.title || product.name || productId,
         contents: [{

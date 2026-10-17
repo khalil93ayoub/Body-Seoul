@@ -164,14 +164,14 @@ function metaCartItemsPayload(items, valueOverride) {
 }
 
 function trackMetaCartEvent(eventName, items, valueOverride) {
-    if (typeof fbq !== "function") {
+    if (!window.BodySeoulMeta) {
         return;
     }
 
     const payload = metaCartItemsPayload(items, valueOverride);
 
     if (payload) {
-        fbq("track", eventName, payload);
+        window.BodySeoulMeta.send("track", eventName, payload);
     }
 }
 
@@ -355,6 +355,8 @@ function addToCartWithQuantity(productId, amount = window.quantity || 1) {
 }
 
 function removeFromCart(productId) {
+    const removed = cart.find(item => item.id === productId);
+    if (removed) window.BodySeoulMeta?.item("RemoveFromCart", removed, removed.quantity);
     cart = cart.filter(item => item.id !== productId);
     saveCart();
     renderCart();
@@ -368,14 +370,17 @@ function changeQuantity(productId, amount) {
         return;
     }
 
-    product.quantity = (Number(product.quantity) || 1) + amount;
+    const previousQuantity = Number(product.quantity) || 1;
+    product.quantity = previousQuantity + amount;
 
     if (product.quantity <= 0) {
+        product.quantity = previousQuantity;
         removeFromCart(productId);
         return;
     }
 
     saveCart();
+    window.BodySeoulMeta?.item(amount > 0 ? "AddToCart" : "RemoveFromCart", product, Math.abs(amount));
     renderCart();
     renderCheckout();
 }

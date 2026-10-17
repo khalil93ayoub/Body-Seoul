@@ -114,13 +114,13 @@
 
     function rememberTrackedOrder(orderId) {
         const nextIds = Array.from(new Set(trackedOrderIds().concat(orderId))).slice(-30);
-        localStorage.setItem(ORDER_EVENT_STORAGE_KEY, JSON.stringify(nextIds));
+        try { localStorage.setItem(ORDER_EVENT_STORAGE_KEY, JSON.stringify(nextIds)); } catch (error) {}
     }
 
     function trackMetaOrder(orderId, items, orderTotal) {
         const id = String(orderId || "").trim();
 
-        if (!id || typeof fbq !== "function" || trackedOrderIds().includes(id)) {
+        if (!id || !window.BodySeoulMeta || trackedOrderIds().includes(id)) {
             return;
         }
 
@@ -131,7 +131,7 @@
         }
 
         rememberTrackedOrder(id);
-        fbq("trackCustom", "Order", {
+        window.BodySeoulMeta.send("track", "Purchase", {
             ...payload,
             order_id: id
         }, {
@@ -226,9 +226,12 @@
                 };
 
                 return saveOrder(firebaseTools, order)
-                    .then(orderId => sendOrderEmail(orderId, customer, items, subtotal, deliveryFee, orderTotal).then(() => orderId))
                     .then(orderId => {
+                        // A persisted order is the conversion, independent of email delivery.
                         trackMetaOrder(orderId, items, orderTotal);
+                        return sendOrderEmail(orderId, customer, items, subtotal, deliveryFee, orderTotal).then(() => orderId);
+                    })
+                    .then(orderId => {
                         localStorage.removeItem("cart");
                         window.BodySeoulSync?.saveStateNow?.();
                         window.BodySeoulSync?.fetchOrders?.();
