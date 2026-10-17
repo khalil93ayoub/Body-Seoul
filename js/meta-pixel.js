@@ -13,6 +13,73 @@
     let pageViewed = false;
     try { consent = localStorage.getItem(CONSENT_KEY) === "denied" ? "denied" : "granted"; } catch (_) {}
 
+
+    // One journey per tab, retained across full-page navigation and reloads.
+    // Duration events are cumulative snapshots; never sum their seconds.
+    const SESSION_KEY = "body_seoul_visit_v1";
+    const SESSION_IDLE_MS = 30 * 60 * 1000;
+    let visit = null;
+    let visibleSince = null;
+
+    function saveVisit() {
+        try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(visit)); } catch (_) {}
+    }
+
+    function sessionData() {
+        const now = Date.now();
+        if (!visit) {
+            try { visit = JSON.parse(sessionStorage.getItem(SESSION_KEY) || "null"); } catch (_) {}
+        }
+        if (!visit || !Number.isFinite(visit.lastSeen) || now - visit.lastSeen >= SESSION_IDLE_MS) {
+            visit = {
+                id: window.crypto?.randomUUID?.() || ("visit-" + now + "-" + Math.random().toString(36).slice(2)),
+                startedAt: now, lastSeen: now, activeMs: 0, reportedMs: 0, revision: 0
+            };
+            visibleSince = null;
+        }
+        if (visibleSince !== null) {
+            visit.activeMs += Math.max(0, now - visibleSince);
+        }
+        visibleSince = document.visibilityState === "hidden" ? null : now;
+        visit.lastSeen = now;
+        saveVisit();
+        return {
+            session_id: visit.id,
+            session_elapsed_seconds: Math.floor((now - visit.startedAt) / 1000),
+            session_active_seconds: Math.floor(visit.activeMs / 1000)
+        };
+    }
+
+    function reportSessionTime() {
+        if (consent !== "granted") return;
+        const data = sessionData();
+        if (visit.activeMs - visit.reportedMs < 1000) return;
+        visit.reportedMs = visit.activeMs;
+        visit.revision += 1;
+        saveVisit();
+        send("trackCustom", "SessionDuration", data, {
+            eventID: visit.id + ":duration:" + visit.revision
+        });
+    }
+
+    function initSessionTimer() {
+        window.setInterval(() => {
+            if (consent === "granted" && document.visibilityState !== "hidden") reportSessionTime();
+        }, 30000);
+        document.addEventListener("visibilitychange", () => {
+            if (consent !== "granted") return;
+            if (document.visibilityState === "hidden") reportSessionTime();
+            else sessionData();
+        });
+        window.addEventListener("pagehide", () => {
+            reportSessionTime();
+            visibleSince = null;
+        });
+        window.addEventListener("pageshow", () => {
+            if (consent === "granted") sessionData();
+        });
+    }
+
     function start() {
         if (started || consent !== "granted") return;
         started = true;
@@ -45,7 +112,7 @@
             const orderId = name === "Purchase" ? String(options.eventID || payload.order_id || "") : "";
             if (name === "Purchase" && (!orderId || sentOrders.has(orderId))) return false;
             const command = standard.has(name) ? "trackSingle" : "trackSingleCustom";
-            window.fbq(command, PIXEL_ID, name, payload, options);
+            window.fbq(command, PIXEL_ID, name, { ...payload, ...sessionData() }, options);
             if (name === "PageView") pageViewed = true;
             if (orderId) sentOrders.add(orderId);
             return true;
@@ -88,6 +155,9 @@
                 contextual.forEach(args => send(...args));
             }
         } else if (started) {
+            visibleSince = null;
+            visit = null;
+            try { sessionStorage.removeItem(SESSION_KEY); } catch (_) {}
             window.fbq("consent", "revoke");
         }
         document.getElementById("bs-marketing-consent")?.remove();
@@ -133,6 +203,7 @@
 
     window.BodySeoulMeta = { send, item, setConsent, showConsent };
     send("track", "PageView");
+    initSessionTimer();
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initUI, { once: true });
     else initUI();
 })();
