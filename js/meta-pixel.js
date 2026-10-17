@@ -7,10 +7,11 @@
     const standard = new Set(["PageView", "ViewContent", "AddToCart", "AddToWishlist", "InitiateCheckout", "Purchase", "Search", "CompleteRegistration", "Contact"]);
     const contextual = new Map();
     const sentOrders = new Set();
-    let consent = "";
+    // Load automatically unless this visitor has explicitly opted out.
+    let consent = "granted";
     let started = false;
     let pageViewed = false;
-    try { consent = localStorage.getItem(CONSENT_KEY) || ""; } catch (_) {}
+    try { consent = localStorage.getItem(CONSENT_KEY) === "denied" ? "denied" : "granted"; } catch (_) {}
 
     function start() {
         if (started || consent !== "granted") return;
@@ -114,7 +115,6 @@
         settings.style.cssText = "position:fixed;bottom:78px;left:8px;z-index:9998;padding:5px 9px;border:1px solid #ddd;border-radius:12px;background:#fff;color:#555;font:12px sans-serif;cursor:pointer";
         settings.addEventListener("click", showConsent);
         document.body.appendChild(settings);
-        if (!consent) showConsent();
 
         // Only fixed interaction labels are sent: no form fields, link queries or customer data.
         document.addEventListener("click", event => {
