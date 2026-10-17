@@ -129,19 +129,6 @@
                 send("trackCustom", "NavigationClick");
             }
         }, true);
-        const milestones = new Set();
-        window.addEventListener("scroll", () => {
-            if (consent !== "granted") return;
-            const available = document.documentElement.scrollHeight - window.innerHeight;
-            if (available <= 0) return;
-            const percentage = Math.floor(window.scrollY / available * 100);
-            [25, 50, 75, 100].forEach(depth => {
-                if (percentage >= depth && !milestones.has(depth)) {
-                    milestones.add(depth);
-                    send("trackCustom", "ScrollDepth", { percent: depth });
-                }
-            });
-        }, { passive: true });
     }
 
     window.BodySeoulMeta = { send, item, setConsent, showConsent };
