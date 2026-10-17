@@ -219,6 +219,7 @@
                 status("Connexion...", "info");
                 firebaseTools.auth.signInWithEmailAndPassword(form.email.value, form.password.value)
                     .then(() => {
+                        window.BodySeoulMeta?.send("trackCustom", "Login");
                         status("Connexion réussie.", "success");
                         window.BodySeoulSync?.fetchOrders?.();
                     })
@@ -247,6 +248,7 @@
                             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                         }, { merge: true })))
                     .then(() => {
+                        window.BodySeoulMeta?.send("track", "CompleteRegistration", { status: true });
                         status("Compte créé avec succès.", "success");
                         window.BodySeoulSync?.saveStateNow?.();
                     })

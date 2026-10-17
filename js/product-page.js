@@ -246,14 +246,14 @@ function productMetaPayload(product, itemQuantity = 1) {
 }
 
 function trackProductMetaEvent(eventName, product, itemQuantity = 1) {
-    if (typeof fbq !== "function") {
+    if (!window.BodySeoulMeta) {
         return;
     }
 
     const payload = productMetaPayload(product, itemQuantity);
 
     if (payload) {
-        fbq("track", eventName, payload);
+        window.BodySeoulMeta.send("track", eventName, payload);
     }
 }
 
@@ -265,12 +265,12 @@ function trackCurrentProductViewContent() {
     const product = currentProductForActions();
     const payload = productMetaPayload(product, 1);
 
-    if (!payload || typeof fbq !== "function") {
+    if (!payload || !window.BodySeoulMeta) {
         return;
     }
 
     document.body.dataset.metaViewContentTracked = "true";
-    fbq("track", "ViewContent", payload);
+    window.BodySeoulMeta.send("track", "ViewContent", payload);
 }
 
 
@@ -316,6 +316,7 @@ function toggleCurrentProductFavorite() {
     }
 
     saveList("favorites", favorites);
+    window.BodySeoulMeta?.item(index === -1 ? "AddToWishlist" : "RemoveFromWishlist", product);
     window.initHeaderDropdowns?.();
     refreshProductFavoriteButton();
 }

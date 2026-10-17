@@ -35,7 +35,7 @@
     }
 
     function trackMobileAddToCart(product, quantity = 1) {
-        if (typeof fbq !== "function" || !product) {
+        if (!window.BodySeoulMeta || !product) {
             return;
         }
 
@@ -47,7 +47,7 @@
             return;
         }
 
-        fbq("track", "AddToCart", {
+        window.BodySeoulMeta.send("track", "AddToCart", {
             content_ids: [productId],
             content_name: product.title || product.name || productId,
             contents: [{
@@ -121,6 +121,7 @@
             : favorites.concat(normalized);
 
         saveList(storageKeyFavorites, favorites);
+        window.BodySeoulMeta?.item(exists ? "RemoveFromWishlist" : "AddToWishlist", normalized);
         refreshFavoriteButtons();
     }
 

@@ -112,6 +112,7 @@ function headerRenderFavorites() {
         item.querySelector(".header-mini-remove").addEventListener("click", event => {
             event.preventDefault();
             event.stopPropagation();
+            window.BodySeoulMeta?.item("RemoveFromWishlist", product);
             headerSaveList("favorites", headerReadList("favorites").filter(item => item.id !== product.id));
             headerRenderFavorites();
             window.renderFavorites?.();
@@ -173,6 +174,7 @@ function headerRenderCart() {
         item.querySelector(".header-mini-remove").addEventListener("click", event => {
             event.preventDefault();
             event.stopPropagation();
+            window.BodySeoulMeta?.item("RemoveFromCart", product, product.quantity);
             headerSaveList("cart", headerReadList("cart").filter(item => item.id !== product.id));
             headerRenderCart();
             window.renderCart?.();
@@ -188,7 +190,9 @@ function headerUpdateCartQuantity(productId, amount) {
     const product = cart.find(item => item.id === productId);
     if (!product) return;
 
-    product.quantity = (Number(product.quantity) || 1) + amount;
+    const previousQuantity = Number(product.quantity) || 1;
+    product.quantity = previousQuantity + amount;
+    window.BodySeoulMeta?.item(amount > 0 ? "AddToCart" : "RemoveFromCart", product, Math.min(previousQuantity, Math.abs(amount)));
     if (product.quantity <= 0) cart = cart.filter(item => item.id !== productId);
 
     headerSaveList("cart", cart);
