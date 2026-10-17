@@ -35,7 +35,7 @@
         quantity
     }));
 
-    const thumbnails = members.map((member, index) =>
+    const thumbnails = [pack, ...members].map((member, index) =>
         '<img src="' + productPath(member.image) + '" alt="' + escapeHTML(member.title) + '" class="thumb' + (index === 0 ? ' active-thumb' : '') + '" onclick="changeImage(' + index + ')">' 
     ).join("");
 
@@ -49,7 +49,7 @@
         (quantity > 1 ? quantity + ' × ' : '') + escapeHTML(product.title) + '</span></div>'
     ).join("");
 
-    const leadImage = productPath(members[0].image);
+    const leadImage = productPath(pack.image);
     document.body.dataset.packPage = "true";
     document.title = pack.title + " - Body & Seoul";
 
