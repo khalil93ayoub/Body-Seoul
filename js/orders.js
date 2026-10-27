@@ -140,9 +140,80 @@
     }
 
 
-    function saveOrder(firebaseTools, order) {
+    function catalogProduct(id) {
+        if (!Array.isArray(window.allProducts)) return null;
+        return window.allProducts.find(product => String(product.id) === String(id)) || null;
+    }
+
+    function stockRequirements(items) {
+        const required = new Map();
+
+        items.forEach(item => {
+            const orderedQuantity = Number(item.quantity) || 1;
+            const product = catalogProduct(item.id);
+            const componentIds = product?.isPack && Array.isArray(product.items) && product.items.length
+                ? product.items
+                : [item.id];
+
+            componentIds.forEach(componentId => {
+                const id = String(componentId || "").trim();
+                if (!id) return;
+                required.set(id, (required.get(id) || 0) + orderedQuantity);
+            });
+        });
+
+        return Array.from(required, ([id, quantity]) => ({ id, quantity }));
+    }
+
+    function saveOrderAndDeductStock(firebaseTools, order) {
         const orderRef = firebaseTools.db.collection("orders").doc();
-        return orderRef.set(order).then(() => orderRef.id);
+        const requirements = stockRequirements(order.items);
+        const stockRefs = requirements.map(item => firebaseTools.db.collection("products").doc(item.id));
+
+        if (!requirements.length) {
+            return Promise.reject(new Error("Impossible de vérifier le stock de cette commande."));
+        }
+
+        return firebaseTools.db.runTransaction(transaction => {
+            return Promise.all(stockRefs.map(ref => transaction.get(ref))).then(snapshots => {
+                const stockUpdates = snapshots.map((snapshot, index) => {
+                    const requirement = requirements[index];
+
+                    if (!snapshot.exists) {
+                        throw new Error("Stock indisponible pour un produit de votre panier.");
+                    }
+
+                    const data = snapshot.data();
+                    const available = Number(data.quantity) || 0;
+
+                    if (available < requirement.quantity) {
+                        const product = catalogProduct(requirement.id);
+                        throw new Error((product?.title || requirement.id) + " n'est plus disponible en quantité suffisante.");
+                    }
+
+                    return {
+                        ref: stockRefs[index],
+                        quantity: available - requirement.quantity,
+                        sold: (Number(data.sold) || 0) + requirement.quantity
+                    };
+                });
+
+                stockUpdates.forEach(update => {
+                    transaction.update(update.ref, {
+                        quantity: update.quantity,
+                        sold: update.sold,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                });
+
+                transaction.set(orderRef, {
+                    ...order,
+                    stockStatus: "deducted",
+                    stockItems: requirements,
+                    stockProcessedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            });
+        }).then(() => orderRef.id);
     }
 
     function sendOrderEmail(orderId, customer, items, subtotal, deliveryFee, orderTotal) {
@@ -221,15 +292,20 @@
                     userId: user ? user.uid : null,
                     userEmail: user ? user.email : null,
                     emailStatus: "formsubmit_pending",
-                    stockStatus: "manual",
+                    stockStatus: "pending",
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
 
-                return saveOrder(firebaseTools, order)
+                return saveOrderAndDeductStock(firebaseTools, order)
                     .then(orderId => {
                         // A persisted order is the conversion, independent of email delivery.
                         trackMetaOrder(orderId, items, orderTotal);
-                        return sendOrderEmail(orderId, customer, items, subtotal, deliveryFee, orderTotal).then(() => orderId);
+                        return sendOrderEmail(orderId, customer, items, subtotal, deliveryFee, orderTotal)
+                            .then(() => orderId)
+                            .catch(error => {
+                                console.warn("Order saved and stock deducted, but email delivery failed.", error);
+                                return orderId;
+                            });
                     })
                     .then(orderId => {
                         localStorage.removeItem("cart");
