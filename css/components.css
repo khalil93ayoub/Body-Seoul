@@ -2331,6 +2331,11 @@ html[dir="rtl"] .card p {
     font-weight: 800;
 }
 
+.product-stock-note[data-stock="low"] {
+    background: #fff4d6;
+    color: #9a5b00;
+}
+
 .product-stock-note[data-stock="empty"] {
     background: #fff0f1;
     color: #c92d3b;
