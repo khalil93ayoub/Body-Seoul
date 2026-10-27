@@ -1,6 +1,6 @@
 (function () {
     let currentStock = null;
-    let unsubscribers = [];
+    let unsubscribe = null;
 
     function productIdFromPath() {
         const match = decodeURIComponent(location.pathname).match(new RegExp("/products/([^/]+)"));
@@ -36,25 +36,15 @@
     }
 
     function renderStock(quantity) {
-        currentStock = Math.max(0, Number(quantity) || 0);
+        currentStock = Number(quantity) || 0;
         const element = ensureStockElement();
         if (!element) return;
 
         const language = window.BodySeoulLanguage?.getLanguage?.() || "fr";
-
-        if (currentStock <= 0) {
-            element.textContent = language === "ar" ? "غير متوفر" : "Rupture de stock";
-            element.dataset.stock = "empty";
-        } else if (currentStock <= 2) {
-            element.textContent = language === "ar"
-                ? (currentStock === 1 ? "بقيت قطعة واحدة فقط" : "بقيت قطعتان فقط")
-                : (currentStock === 1 ? "Plus qu’un article en stock" : "Plus que 2 articles en stock");
-            element.dataset.stock = "low";
-        } else {
-            element.textContent = language === "ar" ? "متوفر" : "Disponible";
-            element.dataset.stock = "available";
-        }
-
+        element.textContent = currentStock > 0
+            ? (language === "ar" ? "متوفر" : "Disponible")
+            : (language === "ar" ? "غير متوفر" : "Rupture de stock");
+        element.dataset.stock = currentStock > 0 ? "available" : "empty";
         setButtonsState(currentStock);
     }
 
@@ -71,52 +61,6 @@
         };
     }
 
-    function componentRequirements(product, fallbackId) {
-        const ids = product?.isPack && Array.isArray(product.items) && product.items.length
-            ? product.items
-            : [fallbackId];
-        const required = new Map();
-
-        ids.forEach(componentId => {
-            const id = String(componentId || "").trim();
-            if (!id) return;
-            required.set(id, (required.get(id) || 0) + 1);
-        });
-
-        return Array.from(required, ([id, quantity]) => ({ id, quantity }));
-    }
-
-    function clearSubscriptions() {
-        unsubscribers.forEach(unsubscribe => unsubscribe?.());
-        unsubscribers = [];
-    }
-
-    function watchStock(firebaseTools, product, fallbackId) {
-        const requirements = componentRequirements(product, fallbackId);
-        const quantities = new Map();
-
-        clearSubscriptions();
-
-        requirements.forEach(requirement => {
-            const unsubscribe = firebaseTools.db.collection("products").doc(requirement.id).onSnapshot(doc => {
-                if (!doc.exists) return;
-
-                quantities.set(requirement.id, Number(doc.data().quantity) || 0);
-
-                if (quantities.size !== requirements.length) return;
-
-                const available = requirements.reduce((lowest, item) => {
-                    const componentStock = Math.floor((quantities.get(item.id) || 0) / item.quantity);
-                    return Math.min(lowest, componentStock);
-                }, Number.POSITIVE_INFINITY);
-
-                renderStock(Number.isFinite(available) ? available : 0);
-            });
-
-            unsubscribers.push(unsubscribe);
-        });
-    }
-
     function init() {
         const id = productIdFromPath();
         if (!id || !document.querySelector(".product-details")) return;
@@ -127,7 +71,12 @@
 
         window.BodySeoulFirebase?.load?.().then(firebaseTools => {
             if (!firebaseTools.ready) return;
-            watchStock(firebaseTools, product, id);
+
+            if (unsubscribe) unsubscribe();
+            unsubscribe = firebaseTools.db.collection("products").doc(id).onSnapshot(doc => {
+                if (!doc.exists) return;
+                renderStock(doc.data().quantity);
+            });
         });
     }
 
