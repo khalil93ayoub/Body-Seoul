@@ -195,7 +195,7 @@ function loadShopCoreScripts() {
                 }
 
                 if (document.querySelector(".checkout-button")) {
-                    loadScriptOnce(componentBase + "js/orders.js?v=20261017a", () => window.BodySeoulOrders?.init());
+                    loadScriptOnce(componentBase + "js/orders.js?v=20261027receipt", () => window.BodySeoulOrders?.init());
                 }
             });
         });
