@@ -24,7 +24,24 @@
     }
 
     function productId(item) {
-        return String(item.id || item.title || item.name || "").trim();
+        const catalog = Array.isArray(window.allProducts) ? window.allProducts : [];
+        const normalize = value => {
+            let text = String(value || "").trim();
+            try { text = decodeURIComponent(text); } catch (error) {}
+            return window.normalizeId ? window.normalizeId(text) : text;
+        };
+        const fromLink = String(item.link || "").match(/\/products\/([^/?#]+)/);
+        const candidates = [item.id, fromLink && fromLink[1], item.title, item.name]
+            .filter(Boolean).map(normalize);
+        const matches = catalog.filter(product =>
+            candidates.includes(normalize(product.id)) ||
+            candidates.includes(normalize(product.title)) ||
+            candidates.includes(normalize(product.name))
+        );
+        if (matches.length !== 1) {
+            throw new Error("Impossible d'identifier le produit : " + (item.title || item.name || item.id || "article") + ". Veuillez le retirer du panier puis l'ajouter à nouveau.");
+        }
+        return String(matches[0].id).trim();
     }
 
     function setOrderStatus(message, type = "info") {
@@ -149,7 +166,10 @@
         const required = new Map();
 
         items.forEach(item => {
-            const orderedQuantity = Number(item.quantity) || 1;
+            const orderedQuantity = Number(item.quantity);
+            if (!Number.isSafeInteger(orderedQuantity) || orderedQuantity < 1) {
+                throw new Error("Veuillez choisir une quantité entière supérieure à zéro.");
+            }
             const product = catalogProduct(item.id);
             const componentIds = product?.isPack && Array.isArray(product.items) && product.items.length
                 ? product.items
@@ -180,7 +200,7 @@
                     const requirement = requirements[index];
 
                     if (!snapshot.exists) {
-                        throw new Error("Stock indisponible pour un produit de votre panier.");
+                        throw new Error("Stock non renseigné pour : " + (catalogProduct(requirement.id)?.title || requirement.id) + ". Veuillez nous contacter.");
                     }
 
                     const data = snapshot.data();
