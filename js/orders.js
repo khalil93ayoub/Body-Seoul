@@ -259,16 +259,25 @@
             formData.append("_autoresponse", "Merci pour votre commande Body & Seoul. Nous l'avons bien reçue et nous vous contacterons bientôt pour confirmer la livraison.");
         }
 
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 12000);
         return fetch(FORM_SUBMIT_ENDPOINT, {
             method: "POST",
             headers: { "Accept": "application/json" },
-            body: formData
+            body: formData,
+            signal: controller.signal,
+            keepalive: true
         }).then(response => {
             if (!response.ok) {
                 throw new Error("L'email de commande n'a pas pu être envoyé.");
             }
-            return response.json().catch(() => ({}));
-        });
+            return response.json().then(result => {
+                if (result.success === false || result.success === "false") {
+                    throw new Error("L’email de commande n’a pas pu être envoyé.");
+                }
+                return result;
+            });
+        }).finally(() => clearTimeout(timeout));
     }
 
     function initOrders() {
@@ -278,6 +287,7 @@
 
         button.addEventListener("click", event => {
             event.preventDefault();
+            if (button.disabled || button.dataset.completedOrder) return;
             const cart = readCart();
             const customer = fields();
             const validation = validate(customer, cart);
@@ -318,28 +328,43 @@
 
                 return saveOrderAndDeductStock(firebaseTools, order)
                     .then(orderId => {
-                        // A persisted order is the conversion, independent of email delivery.
-                        trackMetaOrder(orderId, items, orderTotal);
-                        return sendOrderEmail(orderId, customer, items, subtotal, deliveryFee, orderTotal)
-                            .then(() => orderId)
+                        // Once the transaction commits, email and UI failures must never
+                        // turn a saved order into a retryable checkout failure.
+                        button.dataset.completedOrder = orderId;
+                        const receipt = "Commande enregistrée. Référence : " + orderId + ". Nous vous contacterons bientôt.";
+                        setOrderStatus(receipt, "success");
+                        button.textContent = "Commande enregistrée";
+                        try {
+                            localStorage.removeItem("cart");
+                        } catch (error) {
+                            console.warn("Unable to clear saved cart", error);
+                        }
+                        const followUps = [
+                            () => window.BodySeoulSync?.saveStateNow?.(),
+                            () => window.BodySeoulSync?.fetchOrders?.(),
+                            () => window.renderCheckout?.(),
+                            () => window.renderCart?.(),
+                            () => trackMetaOrder(orderId, items, orderTotal)
+                        ];
+                        followUps.forEach(action => {
+                            Promise.resolve().then(action).catch(error => console.warn("Order follow-up failed", error));
+                        });
+                        // Send the notification separately; the receipt is already visible.
+                        Promise.resolve()
+                            .then(() => sendOrderEmail(orderId, customer, items, subtotal, deliveryFee, orderTotal))
                             .catch(error => {
-                                console.warn("Order saved and stock deducted, but email delivery failed.", error);
-                                return orderId;
+                                console.warn("Order saved; email notification not confirmed", error);
+                                setOrderStatus(receipt + " L’envoi de l’email n’a pas été confirmé. Ne repassez pas cette commande.", "success");
                             });
-                    })
-                    .then(orderId => {
-                        localStorage.removeItem("cart");
-                        window.BodySeoulSync?.saveStateNow?.();
-                        window.BodySeoulSync?.fetchOrders?.();
-                        setOrderStatus("Commande envoyée avec succès. Nous vous contacterons bientôt.", "success");
-                        if (window.renderCheckout) window.renderCheckout();
-                        if (window.renderCart) window.renderCart();
                     });
             }).catch(error => {
                 console.error(error);
-                setOrderStatus(error.message || "Impossible d'envoyer la commande. Réessayez.", "error");
+                const message = error.code === "permission-denied"
+                    ? "Commande non enregistrée : l’autorisation de mise à jour du stock a été refusée. Veuillez nous contacter."
+                    : error.message || "Impossible d’envoyer la commande. Vérifiez votre connexion.";
+                setOrderStatus(message, "error");
             }).finally(() => {
-                button.disabled = false;
+                button.disabled = Boolean(button.dataset.completedOrder);
             });
         });
     }
