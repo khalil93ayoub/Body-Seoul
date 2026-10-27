@@ -189,13 +189,13 @@ function loadShopCoreScripts() {
             loadScriptOnce(componentBase + "js/firebase-sync.js?v=20260522d", () => {
                 window.BodySeoulSync?.init?.();
                 loadScriptOnce(componentBase + "js/account.js?v=20261017a", () => window.BodySeoulAccount?.init());
-                loadScriptOnce(componentBase + "js/stock.js?v=20261027manual", () => window.BodySeoulStock?.init());
+                loadScriptOnce(componentBase + "js/stock.js?v=20260607b", () => window.BodySeoulStock?.init());
                 if (document.getElementById("orders-history-list")) {
                     loadScriptOnce(componentBase + "js/orders-history.js?v=20260522a", () => window.BodySeoulOrdersHistory?.init());
                 }
 
                 if (document.querySelector(".checkout-button")) {
-                    loadScriptOnce(componentBase + "js/orders.js?v=20261027manual2", () => window.BodySeoulOrders?.init());
+                    loadScriptOnce(componentBase + "js/orders.js?v=20261017a", () => window.BodySeoulOrders?.init());
                 }
             });
         });

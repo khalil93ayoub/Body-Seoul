@@ -168,25 +168,16 @@
             formData.append("_autoresponse", "Merci pour votre commande Body & Seoul. Nous l'avons bien reçue et nous vous contacterons bientôt pour confirmer la livraison.");
         }
 
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 20000);
         return fetch(FORM_SUBMIT_ENDPOINT, {
             method: "POST",
             headers: { "Accept": "application/json" },
-            body: formData,
-            signal: controller.signal,
-            keepalive: true
+            body: formData
         }).then(response => {
             if (!response.ok) {
                 throw new Error("L'email de commande n'a pas pu être envoyé.");
             }
-            return response.json().then(result => {
-                if (result.success !== true && result.success !== "true") {
-                    throw new Error("L’envoi de l’email n’a pas été confirmé.");
-                }
-                return result;
-            });
-        }).finally(() => clearTimeout(timeout));
+            return response.json().catch(() => ({}));
+        });
     }
 
     function initOrders() {
@@ -196,7 +187,6 @@
 
         button.addEventListener("click", event => {
             event.preventDefault();
-            if (button.disabled || button.dataset.completedOrder) return;
             const cart = readCart();
             const customer = fields();
             const validation = validate(customer, cart);
@@ -207,12 +197,9 @@
             }
 
             button.disabled = true;
-            setOrderStatus("Enregistrement de votre commande...", "info");
-            const slowTimer = setTimeout(() => {
-                setOrderStatus("Connexion lente : la confirmation de votre commande est encore en attente. Gardez cette page ouverte pour éviter une double commande.", "info");
-            }, 20000);
+            setOrderStatus("Envoi de la commande...", "info");
 
-            Promise.resolve().then(() => window.BodySeoulFirebase.load()).then(firebaseTools => {
+            window.BodySeoulFirebase.load().then(firebaseTools => {
                 if (!firebaseTools.ready) {
                     setOrderStatus("Firebase n'est pas encore configuré. La commande n'a pas été envoyée.", "error");
                     button.disabled = false;
@@ -240,39 +227,23 @@
 
                 return saveOrder(firebaseTools, order)
                     .then(orderId => {
-                        // Email delivery and optional integrations do not gate the receipt.
-                        clearTimeout(slowTimer);
-                        button.dataset.completedOrder = orderId;
-                        button.textContent = "Commande enregistrée";
-                        const receipt = "Commande enregistrée. Référence : " + orderId + ". Nous vous contacterons bientôt.";
-                        setOrderStatus(receipt, "success");
-                        try {
-                            localStorage.removeItem("cart");
-                        } catch (error) {
-                            console.warn("Unable to clear saved cart", error);
-                        }
-                        [
-                            () => window.BodySeoulSync?.saveStateNow?.(),
-                            () => window.BodySeoulSync?.fetchOrders?.(),
-                            () => window.renderCheckout?.(),
-                            () => window.renderCart?.(),
-                            () => trackMetaOrder(orderId, items, orderTotal)
-                        ].forEach(action => {
-                            Promise.resolve().then(action).catch(error => console.warn("Order follow-up failed", error));
-                        });
-                        Promise.resolve()
-                            .then(() => sendOrderEmail(orderId, customer, items, subtotal, deliveryFee, orderTotal))
-                            .catch(error => {
-                                console.warn("Order saved; email notification not confirmed", error);
-                                setOrderStatus(receipt + " La notification par email peut être retardée. Ne repassez pas cette commande.", "success");
-                            });
+                        // A persisted order is the conversion, independent of email delivery.
+                        trackMetaOrder(orderId, items, orderTotal);
+                        return sendOrderEmail(orderId, customer, items, subtotal, deliveryFee, orderTotal).then(() => orderId);
+                    })
+                    .then(orderId => {
+                        localStorage.removeItem("cart");
+                        window.BodySeoulSync?.saveStateNow?.();
+                        window.BodySeoulSync?.fetchOrders?.();
+                        setOrderStatus("Commande envoyée avec succès. Nous vous contacterons bientôt.", "success");
+                        if (window.renderCheckout) window.renderCheckout();
+                        if (window.renderCart) window.renderCart();
                     });
             }).catch(error => {
                 console.error(error);
                 setOrderStatus(error.message || "Impossible d'envoyer la commande. Réessayez.", "error");
             }).finally(() => {
-                clearTimeout(slowTimer);
-                button.disabled = Boolean(button.dataset.completedOrder);
+                button.disabled = false;
             });
         });
     }
