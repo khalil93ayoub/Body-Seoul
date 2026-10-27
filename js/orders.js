@@ -24,24 +24,7 @@
     }
 
     function productId(item) {
-        const catalog = Array.isArray(window.allProducts) ? window.allProducts : [];
-        const normalize = value => {
-            let text = String(value || "").trim();
-            try { text = decodeURIComponent(text); } catch (error) {}
-            return window.normalizeId ? window.normalizeId(text) : text;
-        };
-        const fromLink = String(item.link || "").match(/\/products\/([^/?#]+)/);
-        const candidates = [item.id, fromLink && fromLink[1], item.title, item.name]
-            .filter(Boolean).map(normalize);
-        const matches = catalog.filter(product =>
-            candidates.includes(normalize(product.id)) ||
-            candidates.includes(normalize(product.title)) ||
-            candidates.includes(normalize(product.name))
-        );
-        if (matches.length !== 1) {
-            throw new Error("Impossible d'identifier le produit : " + (item.title || item.name || item.id || "article") + ". Veuillez le retirer du panier puis l'ajouter à nouveau.");
-        }
-        return String(matches[0].id).trim();
+        return String(item.id || item.title || item.name || "").trim();
     }
 
     function setOrderStatus(message, type = "info") {
@@ -157,83 +140,9 @@
     }
 
 
-    function catalogProduct(id) {
-        if (!Array.isArray(window.allProducts)) return null;
-        return window.allProducts.find(product => String(product.id) === String(id)) || null;
-    }
-
-    function stockRequirements(items) {
-        const required = new Map();
-
-        items.forEach(item => {
-            const orderedQuantity = Number(item.quantity);
-            if (!Number.isSafeInteger(orderedQuantity) || orderedQuantity < 1) {
-                throw new Error("Veuillez choisir une quantité entière supérieure à zéro.");
-            }
-            const product = catalogProduct(item.id);
-            const componentIds = product?.isPack && Array.isArray(product.items) && product.items.length
-                ? product.items
-                : [item.id];
-
-            componentIds.forEach(componentId => {
-                const id = String(componentId || "").trim();
-                if (!id) return;
-                required.set(id, (required.get(id) || 0) + orderedQuantity);
-            });
-        });
-
-        return Array.from(required, ([id, quantity]) => ({ id, quantity }));
-    }
-
-    function saveOrderAndDeductStock(firebaseTools, order) {
+    function saveOrder(firebaseTools, order) {
         const orderRef = firebaseTools.db.collection("orders").doc();
-        const requirements = stockRequirements(order.items);
-        const stockRefs = requirements.map(item => firebaseTools.db.collection("products").doc(item.id));
-
-        if (!requirements.length) {
-            return Promise.reject(new Error("Impossible de vérifier le stock de cette commande."));
-        }
-
-        return firebaseTools.db.runTransaction(transaction => {
-            return Promise.all(stockRefs.map(ref => transaction.get(ref))).then(snapshots => {
-                const stockUpdates = snapshots.map((snapshot, index) => {
-                    const requirement = requirements[index];
-
-                    if (!snapshot.exists) {
-                        throw new Error("Stock non renseigné pour : " + (catalogProduct(requirement.id)?.title || requirement.id) + ". Veuillez nous contacter.");
-                    }
-
-                    const data = snapshot.data();
-                    const available = Number(data.quantity) || 0;
-
-                    if (available < requirement.quantity) {
-                        const product = catalogProduct(requirement.id);
-                        throw new Error((product?.title || requirement.id) + " n'est plus disponible en quantité suffisante.");
-                    }
-
-                    return {
-                        ref: stockRefs[index],
-                        quantity: available - requirement.quantity,
-                        sold: (Number(data.sold) || 0) + requirement.quantity
-                    };
-                });
-
-                stockUpdates.forEach(update => {
-                    transaction.update(update.ref, {
-                        quantity: update.quantity,
-                        sold: update.sold,
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                });
-
-                transaction.set(orderRef, {
-                    ...order,
-                    stockStatus: "deducted",
-                    stockItems: requirements,
-                    stockProcessedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-            });
-        }).then(() => orderRef.id);
+        return orderRef.set(order).then(() => orderRef.id);
     }
 
     function sendOrderEmail(orderId, customer, items, subtotal, deliveryFee, orderTotal) {
@@ -259,25 +168,16 @@
             formData.append("_autoresponse", "Merci pour votre commande Body & Seoul. Nous l'avons bien reçue et nous vous contacterons bientôt pour confirmer la livraison.");
         }
 
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 12000);
         return fetch(FORM_SUBMIT_ENDPOINT, {
             method: "POST",
             headers: { "Accept": "application/json" },
-            body: formData,
-            signal: controller.signal,
-            keepalive: true
+            body: formData
         }).then(response => {
             if (!response.ok) {
                 throw new Error("L'email de commande n'a pas pu être envoyé.");
             }
-            return response.json().then(result => {
-                if (result.success === false || result.success === "false") {
-                    throw new Error("L’email de commande n’a pas pu être envoyé.");
-                }
-                return result;
-            });
-        }).finally(() => clearTimeout(timeout));
+            return response.json().catch(() => ({}));
+        });
     }
 
     function initOrders() {
@@ -287,7 +187,6 @@
 
         button.addEventListener("click", event => {
             event.preventDefault();
-            if (button.disabled || button.dataset.completedOrder) return;
             const cart = readCart();
             const customer = fields();
             const validation = validate(customer, cart);
@@ -322,49 +221,29 @@
                     userId: user ? user.uid : null,
                     userEmail: user ? user.email : null,
                     emailStatus: "formsubmit_pending",
-                    stockStatus: "pending",
+                    stockStatus: "manual",
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
 
-                return saveOrderAndDeductStock(firebaseTools, order)
+                return saveOrder(firebaseTools, order)
                     .then(orderId => {
-                        // Once the transaction commits, email and UI failures must never
-                        // turn a saved order into a retryable checkout failure.
-                        button.dataset.completedOrder = orderId;
-                        const receipt = "Commande enregistrée. Référence : " + orderId + ". Nous vous contacterons bientôt.";
-                        setOrderStatus(receipt, "success");
-                        button.textContent = "Commande enregistrée";
-                        try {
-                            localStorage.removeItem("cart");
-                        } catch (error) {
-                            console.warn("Unable to clear saved cart", error);
-                        }
-                        const followUps = [
-                            () => window.BodySeoulSync?.saveStateNow?.(),
-                            () => window.BodySeoulSync?.fetchOrders?.(),
-                            () => window.renderCheckout?.(),
-                            () => window.renderCart?.(),
-                            () => trackMetaOrder(orderId, items, orderTotal)
-                        ];
-                        followUps.forEach(action => {
-                            Promise.resolve().then(action).catch(error => console.warn("Order follow-up failed", error));
-                        });
-                        // Send the notification separately; the receipt is already visible.
-                        Promise.resolve()
-                            .then(() => sendOrderEmail(orderId, customer, items, subtotal, deliveryFee, orderTotal))
-                            .catch(error => {
-                                console.warn("Order saved; email notification not confirmed", error);
-                                setOrderStatus(receipt + " L’envoi de l’email n’a pas été confirmé. Ne repassez pas cette commande.", "success");
-                            });
+                        // A persisted order is the conversion, independent of email delivery.
+                        trackMetaOrder(orderId, items, orderTotal);
+                        return sendOrderEmail(orderId, customer, items, subtotal, deliveryFee, orderTotal).then(() => orderId);
+                    })
+                    .then(orderId => {
+                        localStorage.removeItem("cart");
+                        window.BodySeoulSync?.saveStateNow?.();
+                        window.BodySeoulSync?.fetchOrders?.();
+                        setOrderStatus("Commande envoyée avec succès. Nous vous contacterons bientôt.", "success");
+                        if (window.renderCheckout) window.renderCheckout();
+                        if (window.renderCart) window.renderCart();
                     });
             }).catch(error => {
                 console.error(error);
-                const message = error.code === "permission-denied"
-                    ? "Commande non enregistrée : l’autorisation de mise à jour du stock a été refusée. Veuillez nous contacter."
-                    : error.message || "Impossible d’envoyer la commande. Vérifiez votre connexion.";
-                setOrderStatus(message, "error");
+                setOrderStatus(error.message || "Impossible d'envoyer la commande. Réessayez.", "error");
             }).finally(() => {
-                button.disabled = Boolean(button.dataset.completedOrder);
+                button.disabled = false;
             });
         });
     }
