@@ -2,6 +2,7 @@
     const FORM_SUBMIT_ENDPOINT = "https://formsubmit.co/ajax/bf3603cc019d5aa8703d667ae52736ca";
     const DELIVERY_FEE = 40;
     const FREE_DELIVERY_THRESHOLD = 500;
+    const SERVER_EMAIL_TEST = new URLSearchParams(window.location.search).get("email_test") === "server";
 
     function readCart() {
         try {
@@ -233,7 +234,7 @@
                     status: "new",
                     userId: user ? user.uid : null,
                     userEmail: user ? user.email : null,
-                    emailStatus: "formsubmit_pending",
+                    emailStatus: SERVER_EMAIL_TEST ? "server_pending" : "formsubmit_pending",
                     stockStatus: "manual",
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
@@ -245,14 +246,16 @@
                         button.textContent = "Commande enregistrée";
                         const receipt = "Commande enregistrée avec succès. Référence : " + orderId + ". Nous vous contacterons bientôt.";
                         setOrderStatus(receipt, "success");
-                        // Start the notification immediately. Email response time must not
-                        // determine whether an already-persisted order looks successful.
-                        Promise.resolve()
-                            .then(() => sendOrderEmail(orderId, customer, items, subtotal, deliveryFee, orderTotal))
-                            .catch(error => {
-                                console.warn("Order saved; email delivery not confirmed", error);
-                                setOrderStatus(receipt + " La notification par email peut être retardée. Ne repassez pas cette commande.", "success");
-                            });
+                        if (!SERVER_EMAIL_TEST) {
+                            // Start the notification immediately. Email response time must not
+                            // determine whether an already-persisted order looks successful.
+                            Promise.resolve()
+                                .then(() => sendOrderEmail(orderId, customer, items, subtotal, deliveryFee, orderTotal))
+                                .catch(error => {
+                                    console.warn("Order saved; email delivery not confirmed", error);
+                                    setOrderStatus(receipt + " La notification par email peut être retardée. Ne repassez pas cette commande.", "success");
+                                });
+                        }
                         try {
                             localStorage.removeItem("cart");
                         } catch (error) {
