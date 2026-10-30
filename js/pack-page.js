@@ -36,7 +36,7 @@
     }));
 
     const thumbnails = [pack, ...members].map((member, index) =>
-        '<img src="' + productPath(member.image) + '" alt="' + escapeHTML(member.title) + '" class="thumb' + (index === 0 ? ' active-thumb' : '') + '" onclick="changeImage(' + index + ')">' 
+        '<img src="' + productPath(member.image) + '" alt="' + escapeHTML(member.title) + '" class="thumb' + (index === 0 ? ' active-thumb' : '') + '" onclick="changeImage(' + index + ')">'
     ).join("");
 
     const includedItems = uniqueMembers.map(({ product, quantity }) =>
@@ -82,9 +82,9 @@
                     <span>${escapeHTML(pack.rating)} · ${escapeHTML(pack.reviews)} avis</span>
                 </div>
                 <div class="product-price-block">
-                    <span class="product-old-price">${escapeHTML(pack.oldPrice)}</span>
+
                     <div class="product-price">${escapeHTML(pack.price)}</div>
-                    <p class="pack-saving">Économisez 15% sur ce pack</p>
+
                 </div>
                 <p class="product-description">${escapeHTML(pack.description)}</p>
                 <div class="product-benefits">${benefits}</div>
@@ -115,7 +115,7 @@
             </div>
             <div class="info-card">
                 <h2>Pourquoi choisir ce pack</h2>
-                <p>Ces produits sont réunis pour compléter votre routine tout en vous faisant économiser 15% par rapport à l’achat des produits séparément.</p>
+                <p>Ces produits sont réunis pour compléter votre routine de soin quotidienne.</p>
             </div>
         </section>
     `;

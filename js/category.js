@@ -205,7 +205,7 @@ function renderCategoryProducts() {
     filteredProducts.forEach((product, index) => {
         const productId = categoryProductId(product);
         const oldPrice = product.oldPrice ? '<del>' + product.oldPrice + '</del>' : '';
-        const packBadge = product.isPack ? '<span class="product-pack-badge">PACK -15%</span>' : '';
+        const packBadge = product.isPack ? '<span class="product-pack-badge">PACK</span>' : '';
 
         grid.innerHTML += '<div class="category-product-card" data-index="' + index + '">' +
             packBadge +

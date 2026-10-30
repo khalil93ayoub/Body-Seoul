@@ -86,7 +86,6 @@ function ensureProductBadges() {
     badges.className = "product-badges";
     badges.innerHTML = isPack ? `
         <span class="product-badge">Pack exclusif</span>
-        <span class="product-badge secondary"><i class="fa-solid fa-tag"></i> -15%</span>
     ` : `
         <span class="product-badge">Best-seller</span>
         <span class="product-badge secondary"><i class="fa-solid fa-leaf"></i> Vegan</span>

@@ -238,8 +238,10 @@ function currentPageProduct(productId) {
 
 function normalizeProduct(productOrId) {
     if (typeof productOrId === "object" && productOrId !== null) {
-        const product = productOrId;
-        const id = product.id || productIdFromLink(product.link) || product.title;
+        const storedProduct = productOrId;
+        const id = storedProduct.id || productIdFromLink(storedProduct.link) || storedProduct.title;
+        const catalogProduct = findCatalogProduct(id);
+        const product = catalogProduct?.isPack ? { ...storedProduct, ...catalogProduct } : storedProduct;
 
         return {
             id,
