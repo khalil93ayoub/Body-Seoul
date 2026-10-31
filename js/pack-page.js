@@ -73,14 +73,17 @@
             <div class="product-details">
                 <p class="product-brand">BODY & SEOUL</p>
                 <h1 class="product-title">${escapeHTML(pack.title)}</h1>
-                <div class="product-rating">
-                    <i class="fa-solid fa-star"></i>
-                    <i class="fa-solid fa-star"></i>
-                    <i class="fa-solid fa-star"></i>
-                    <i class="fa-solid fa-star"></i>
-                    <i class="fa-solid fa-star-half-stroke"></i>
-                    <span>${escapeHTML(pack.rating)} · ${escapeHTML(pack.reviews)} avis</span>
-                </div>
+                ${Number(pack.reviews) > 0 ? `
+                    <div class="product-rating">
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star-half-stroke"></i>
+                        <span>${escapeHTML(pack.rating)} · ${escapeHTML(pack.reviews)} avis</span>
+                    </div>
+                ` : '<div class="product-rating"><span>Nouveau</span></div>'}
+
                 <div class="product-price-block">
 
                     <div class="product-price">${escapeHTML(pack.price)}</div>
