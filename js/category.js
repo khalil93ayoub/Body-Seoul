@@ -218,11 +218,9 @@ function renderCategoryProducts() {
             '<div class="product-card-info">' +
                 '<p class="product-brand">' + (product.brand || "BODY & SEOUL") + '</p>' +
                 '<a href="' + product.link + '"><h3>' + product.title + '</h3></a>' +
-                '<div class="product-rating">' +
-                    '<i class="fa-solid fa-star"></i>' +
-                    '<span>' + (product.rating || "4.8") + '</span>' +
-                    '<small>(' + (product.reviews || "124") + ')</small>' +
-                '</div>' +
+                (Number(product.reviews) > 0
+                    ? '<div class="product-rating"><i class="fa-solid fa-star"></i><span>' + product.rating + '</span><small>(' + product.reviews + ')</small></div>'
+                    : '<div class="product-rating"><span>Nouveau</span></div>') +
                 '<div class="product-price-row">' +
                     '<strong>' + (product.price || "149 DHS") + '</strong>' +
                     oldPrice +
