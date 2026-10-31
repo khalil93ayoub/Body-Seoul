@@ -7,7 +7,7 @@
     let applying = false;
 
     const translations = {
-        "Livraison offerte dès 500 DHS": "توصيل مجاني ابتداء من 500 درهم",
+        "Livraison offerte dès 800 DHS": "توصيل مجاني ابتداء من 800 درهم",
         "Authentiques": "أصلية",
         "Coréens": "كورية",
         "Efficaces": "فعالة",
@@ -53,7 +53,7 @@
         "Produits 100% authentiques": "منتجات أصلية 100%",
         "Importés directement de Corée": "مستوردة مباشرة من كوريا",
         "Livraison rapide au Maroc": "توصيل سريع داخل المغرب",
-        "Offerte dès 500 DHS": "مجاني ابتداء من 500 درهم",
+        "Offerte dès 800 DHS": "مجاني ابتداء من 800 درهم",
         "Échantillons offerts": "عينات مجانية",
         "À chaque commande": "مع كل طلب",
         "Paiement sécurisé": "دفع آمن",
@@ -208,8 +208,8 @@
     });
 
     Object.assign(translations, {
-            "Livraison offerte dès 500 DHS": "توصيل مجاني ابتداء من 500 درهم",
-            "Offerte dès 500 DHS": "مجاني ابتداء من 500 درهم",
+            "Livraison offerte dès 800 DHS": "توصيل مجاني ابتداء من 800 درهم",
+            "Offerte dès 800 DHS": "مجاني ابتداء من 800 درهم",
             "Sous-total": "المجموع الفرعي",
             "Frais de livraison": "رسوم التوصيل",
             "Offerte": "مجاني",
