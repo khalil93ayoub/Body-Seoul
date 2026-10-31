@@ -1,7 +1,7 @@
 (function () {
     const FORM_SUBMIT_ENDPOINT = "https://formsubmit.co/ajax/bf3603cc019d5aa8703d667ae52736ca";
     const DELIVERY_FEE = 40;
-    const FREE_DELIVERY_THRESHOLD = 500;
+    const FREE_DELIVERY_THRESHOLD = 800;
 
 
     function readCart() {
