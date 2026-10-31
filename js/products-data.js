@@ -239,6 +239,42 @@ const allProducts = [
         "name": "Regard & Éclat",
         "isPack": true,
         "items": ["revive-eye-serum","low-ph-good-morning","relief-cream","relief-sun"]
+    },
+    {
+        "id": "peau-nette-equilibree",
+        "title": "Peau Nette & Équilibrée",
+        "description": "Une routine peau nette et équilibrée réunissant le nettoyant COSRX Low pH Good Morning Gel Cleanser, le sérum Medicube PDRN Pink Peptide, la crème Dr. Althea 345 et le Sun Serum SKIN1004.",
+        "image": "../products/peau-nette-equilibree/product-main.jpg",
+        "category": "packs",
+        "link": "../products/peau-nette-equilibree/index.html",
+        "brand": "BODY & SEOUL",
+        "price": "929 DHS",
+        "name": "Peau Nette & Équilibrée",
+        "isPack": true,
+        "items": [
+            "low-ph-good-morning",
+            "medicube PDRN Pink Peptide Serum",
+            "relief-cream",
+            "hyalu-cica-sun-serum"
+        ]
+    },
+    {
+        "id": "hydratation-intense",
+        "title": "Hydratation Intense",
+        "description": "Une routine hydratation intense réunissant le nettoyant COSRX Low pH Good Morning Gel Cleanser, le sérum Medicube PDRN Pink Peptide, la crème Dr. Althea 345 et la protection solaire Beauty of Joseon Relief Sun.",
+        "image": "../products/hydratation-intense/product-main.jpg",
+        "category": "packs",
+        "link": "../products/hydratation-intense/index.html",
+        "brand": "BODY & SEOUL",
+        "price": "929 DHS",
+        "name": "Hydratation Intense",
+        "isPack": true,
+        "items": [
+            "low-ph-good-morning",
+            "medicube PDRN Pink Peptide Serum",
+            "relief-cream",
+            "relief-sun"
+        ]
     }
 ];
 
