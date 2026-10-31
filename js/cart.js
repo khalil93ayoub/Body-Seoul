@@ -48,7 +48,7 @@ const totalPriceElement = document.getElementById("cart-total");
 const checkoutProducts = document.getElementById("checkout-products");
 const checkoutTotalPrice = document.getElementById("checkout-total-price");
 const DELIVERY_FEE = 40;
-const FREE_DELIVERY_THRESHOLD = 500;
+const FREE_DELIVERY_THRESHOLD = 800;
 
 let cart = readCart();
 
