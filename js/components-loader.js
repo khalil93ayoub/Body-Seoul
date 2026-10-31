@@ -129,7 +129,7 @@ function loadLanguageSwitcher() {
     }
 
     const script = document.createElement("script");
-    script.src = componentBase + "js/language.js?v=20260916a";
+    script.src = componentBase + "js/language.js?v=20261031delivery800";
     script.onload = () => {
         if (window.BodySeoulLanguage) {
             window.BodySeoulLanguage.init();
