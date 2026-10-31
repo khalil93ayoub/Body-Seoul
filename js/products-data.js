@@ -213,6 +213,32 @@ const allProducts = [
         "name": "Pack 345 : 2 x Dr. Althea 345 Relief Cream",
         "isPack": true,
         "items": ["relief-cream", "relief-cream"]
+    },
+    {
+        "id": "anti-age-regeneration",
+        "title": "Anti-Âge & Régénération",
+        "description": "Une routine complète anti-âge et éclat réunissant le Celimax Vita-A Retinal Shot, le sérum Medicube PDRN, la crème Dr. Althea 345, le nettoyant COSRX Low pH Good Morning Gel Cleanser et la protection solaire Beauty of Joseon Relief Sun.",
+        "image": "../products/anti-age-regeneration/product-main.svg",
+        "category": "packs",
+        "link": "../products/anti-age-regeneration/index.html",
+        "brand": "BODY & SEOUL",
+        "price": "1149 DHS",
+        "name": "Anti-Âge & Régénération",
+        "isPack": true,
+        "items": ["Celimax The -A Retinol Shot","medicube PDRN Pink Peptide Serum","relief-cream","low-ph-good-morning","relief-sun"]
+    },
+    {
+        "id": "regard-eclat",
+        "title": "Regard & Éclat",
+        "description": "Une routine lumineuse pour le regard et le teint réunissant le sérum yeux Beauty of Joseon Revive Eye Serum, le nettoyant COSRX Low pH Good Morning Gel Cleanser, la crème Dr. Althea 345 et la protection solaire Beauty of Joseon Relief Sun.",
+        "image": "../products/regard-eclat/product-main.svg",
+        "category": "packs",
+        "link": "../products/regard-eclat/index.html",
+        "brand": "BODY & SEOUL",
+        "price": "899 DHS",
+        "name": "Regard & Éclat",
+        "isPack": true,
+        "items": ["revive-eye-serum","low-ph-good-morning","relief-cream","relief-sun"]
     }
 ];
 
