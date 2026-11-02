@@ -38,7 +38,7 @@ function headerSaveList(key, value) {
 }
 
 function headerPrice(price) {
-    return Number(String(price || "0").replace(/[^0-9]/g, "")) || 0;
+    return Number(String(price || "0").replace(/[^0-9.,]/g, "").replace(",", ".")) || 0;
 }
 
 function headerProductPath(value) {
@@ -131,7 +131,7 @@ function headerRenderCart() {
 
     const cart = headerReadList("cart");
     const quantity = cart.reduce((sum, item) => sum + (Number(item.quantity) || 1), 0);
-    const totalValue = cart.reduce((sum, item) => sum + headerPrice(item.price) * (Number(item.quantity) || 1), 0);
+    const totalValue = cart.reduce((sum, item) => sum + Math.round(headerPrice(item.price) * 100) * (Number(item.quantity) || 1), 0) / 100;
     count.textContent = quantity;
     total.textContent = totalValue + " DHS";
     list.innerHTML = "";

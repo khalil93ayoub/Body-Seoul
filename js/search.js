@@ -39,7 +39,7 @@
                     <strong>${product.title}</strong>
                     <small>${product.description || product.category || "Produit skincare coréen"}</small>
                 </span>
-                <b>${String(product.price || "").replace(/[^0-9]/g, "") || product.price} DHS</b>
+                <b>${String(product.price || "").replace(/[^0-9.,]/g, "").replace(",", ".") || product.price} DHS</b>
             </a>
         `).join("");
     }

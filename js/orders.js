@@ -6,18 +6,21 @@
 
     function readCart() {
         try {
-            return JSON.parse(localStorage.getItem("cart") || "[]");
+            return JSON.parse(localStorage.getItem("cart") || "[]").map(item => ({
+                ...(window.normalizeProduct ? window.normalizeProduct(item) : item),
+                quantity: Number(item.quantity) || 1
+            }));
         } catch (error) {
             return [];
         }
     }
 
     function priceToNumber(price) {
-        return Number(String(price || "0").replace(/[^0-9]/g, "")) || 0;
+        return Number(String(price || "0").replace(/[^0-9.,]/g, "").replace(",", ".")) || 0;
     }
 
     function total(cart) {
-        return cart.reduce((sum, item) => sum + priceToNumber(item.price) * (Number(item.quantity) || 1), 0);
+        return cart.reduce((sum, item) => sum + Math.round(priceToNumber(item.price) * 100) * (Number(item.quantity) || 1), 0) / 100;
     }
 
     function deliveryFeeForSubtotal(subtotal) {
@@ -72,7 +75,7 @@
     function orderLines(items) {
         return items.map(item => {
             const quantity = Number(item.quantity) || 1;
-            return item.title + " x " + quantity + " - " + (priceToNumber(item.price) * quantity) + " DHS";
+            return item.title + " x " + quantity + " - " + Number((priceToNumber(item.price) * quantity).toFixed(2)) + " DHS";
         }).join("\n");
     }
     const ORDER_EVENT_STORAGE_KEY = "body_seoul_tracked_orders";
@@ -224,7 +227,7 @@
                 const items = normalizeItems(cart);
                 const subtotal = total(cart);
                 const deliveryFee = deliveryFeeForSubtotal(subtotal);
-                const orderTotal = subtotal + deliveryFee;
+                const orderTotal = Math.round((subtotal + deliveryFee) * 100) / 100;
                 const order = {
                     customer,
                     items,

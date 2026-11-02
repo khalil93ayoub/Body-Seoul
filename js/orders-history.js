@@ -12,7 +12,7 @@
     }
 
     function priceToNumber(price) {
-        return Number(String(price || "0").replace(/[^0-9]/g, "")) || 0;
+        return Number(String(price || "0").replace(/[^0-9.,]/g, "").replace(",", ".")) || 0;
     }
 
     function productPathFromValue(value) {

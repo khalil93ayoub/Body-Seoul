@@ -121,7 +121,7 @@ function priceToNumber(price) {
         return price;
     }
 
-    const value = String(price || "0").replace(/[^0-9]/g, "");
+    const value = String(price || "0").replace(/[^0-9.,]/g, "").replace(",", ".");
     return Number(value || 0);
 }
 
@@ -241,7 +241,7 @@ function normalizeProduct(productOrId) {
         const storedProduct = productOrId;
         const id = storedProduct.id || productIdFromLink(storedProduct.link) || storedProduct.title;
         const catalogProduct = findCatalogProduct(id);
-        const product = catalogProduct?.isPack ? { ...storedProduct, ...catalogProduct } : storedProduct;
+        const product = catalogProduct ? { ...storedProduct, ...catalogProduct } : storedProduct;
 
         return {
             id,
@@ -268,9 +268,9 @@ function saveCart() {
 
 function cartTotal() {
     return cart.reduce((sum, product) =>
-        sum + priceToNumber(product.price) * (Number(product.quantity) || 1),
+        sum + Math.round(priceToNumber(product.price) * 100) * (Number(product.quantity) || 1),
         0
-    );
+    ) / 100;
 }
 
 function deliveryFeeForSubtotal(subtotal) {
@@ -279,7 +279,7 @@ function deliveryFeeForSubtotal(subtotal) {
 
 function checkoutGrandTotal() {
     const subtotal = cartTotal();
-    return subtotal + deliveryFeeForSubtotal(subtotal);
+    return Math.round((subtotal + deliveryFeeForSubtotal(subtotal)) * 100) / 100;
 }
 
 function removeCheckoutFeeRows() {
@@ -435,7 +435,7 @@ function createLineItem(product, options = {}) {
         </div>
 
         <strong class="cart-line-subtotal">
-            ${priceToNumber(product.price) * product.quantity} DHS
+            ${Number((priceToNumber(product.price) * product.quantity).toFixed(2))} DHS
         </strong>
 
         <button class="remove-item" type="button" aria-label="Supprimer du panier">

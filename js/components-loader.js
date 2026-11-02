@@ -111,7 +111,7 @@ function loadHeaderDropdowns() {
     }
 
     const script = document.createElement("script");
-    script.src = componentBase + "js/header-dropdowns.js?v=20261017a";
+    script.src = componentBase + "js/header-dropdowns.js?v=20261102prices";
     script.onload = () => {
         if (window.initHeaderDropdowns) {
             window.initHeaderDropdowns();
@@ -147,7 +147,7 @@ function loadMobileEnhancements() {
     }
 
     const script = document.createElement("script");
-    script.src = componentBase + "js/mobile.js?v=20261017a";
+    script.src = componentBase + "js/mobile.js?v=20261102prices";
     script.onload = () => {
         if (window.BodySeoulMobile) {
             window.BodySeoulMobile.init();
@@ -185,17 +185,17 @@ function loadShopCoreScripts() {
 
     loadScriptOnce(componentBase + "js/firebase-config.js?v=20260521a", () => {
         loadScriptOnce(componentBase + "js/firebase-app.js?v=20260521a", () => {
-            loadScriptOnce(componentBase + "js/search.js?v=20261017a", () => window.BodySeoulSearch?.init());
+            loadScriptOnce(componentBase + "js/search.js?v=20261102prices", () => window.BodySeoulSearch?.init());
             loadScriptOnce(componentBase + "js/firebase-sync.js?v=20260522d", () => {
                 window.BodySeoulSync?.init?.();
-                loadScriptOnce(componentBase + "js/account.js?v=20261017a", () => window.BodySeoulAccount?.init());
+                loadScriptOnce(componentBase + "js/account.js?v=20261102prices", () => window.BodySeoulAccount?.init());
                 loadScriptOnce(componentBase + "js/stock.js?v=20260607b", () => window.BodySeoulStock?.init());
                 if (document.getElementById("orders-history-list")) {
-                    loadScriptOnce(componentBase + "js/orders-history.js?v=20260522a", () => window.BodySeoulOrdersHistory?.init());
+                    loadScriptOnce(componentBase + "js/orders-history.js?v=20261102prices", () => window.BodySeoulOrdersHistory?.init());
                 }
 
                 if (document.querySelector(".checkout-button")) {
-                    loadScriptOnce(componentBase + "js/orders.js?v=20261031delivery800", () => window.BodySeoulOrders?.init());
+                    loadScriptOnce(componentBase + "js/orders.js?v=20261102prices", () => window.BodySeoulOrders?.init());
                 }
             });
         });

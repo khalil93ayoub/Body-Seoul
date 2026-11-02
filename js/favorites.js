@@ -66,7 +66,7 @@ function favoriteProductImage(product) {
 
 function favoritePriceToNumber(price) {
     if (typeof priceToNumber === "function") return priceToNumber(price);
-    return Number(String(price || "0").replace(/[^0-9]/g, "")) || 0;
+    return Number(String(price || "0").replace(/[^0-9.,]/g, "").replace(",", ".")) || 0;
 }
 
 function favoriteTrackAddToCart(product, quantity = 1) {

@@ -85,11 +85,11 @@
     }
 
     function priceToNumber(price) {
-        return Number(String(price || "0").replace(/[^0-9]/g, "")) || 0;
+        return Number(String(price || "0").replace(/[^0-9.,]/g, "").replace(",", ".")) || 0;
     }
 
     function lineTotal(item) {
-        return priceToNumber(item.price) * (Number(item.quantity) || 1);
+        return Math.round(priceToNumber(item.price) * 100) * (Number(item.quantity) || 1) / 100;
     }
 
     function status(message, type = "info") {
@@ -162,7 +162,7 @@
 
         const user = state.user;
         const name = user?.displayName || state.customer?.name || user?.email || "Client";
-        const cartTotal = state.cart.reduce((sum, item) => sum + lineTotal(item), 0);
+        const cartTotal = state.cart.reduce((sum, item) => sum + Math.round(lineTotal(item) * 100), 0) / 100;
         const cartQuantity = state.cart.reduce((sum, item) => sum + (Number(item.quantity) || 1), 0);
 
         dashboard.innerHTML =
