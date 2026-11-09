@@ -37,7 +37,7 @@ test('saved cart and order use current catalog prices and preserve quantities', 
     assert.equal(orders.total(items), 743.8);
     assert.equal(orders.normalizeItems(items)[0].price, 259);
     assert.equal(items[0].quantity, 2);
-    assert.match(orders.orderLines(items), /518\.34 DHS/);
+    assert.match(orders.orderLines(items), /518 DHS/);
 });
 
 test('delivery threshold stays at 800 MAD including decimal subtotals', () => {
