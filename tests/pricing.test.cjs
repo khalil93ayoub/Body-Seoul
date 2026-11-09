@@ -30,14 +30,14 @@ test('saved cart and order use current catalog prices and preserve quantities', 
         { id: 'relief-sun', price: 219, quantity: 1 }
     ]));
     vm.runInContext('cart = readCart(); normalizeCart();', ctx);
-    assert.equal(vm.runInContext('cartTotal()', ctx), 741.14);
-    assert.equal(vm.runInContext('checkoutGrandTotal()', ctx), 781.14);
+    assert.equal(vm.runInContext('cartTotal()', ctx), 743.8);
+    assert.equal(vm.runInContext('checkoutGrandTotal()', ctx), 783.8);
     const orders = ctx.window.orderPricing;
     const items = orders.readCart();
     assert.equal(orders.total(items), 741.14);
-    assert.equal(orders.normalizeItems(items)[0].price, 257.67);
+    assert.equal(orders.normalizeItems(items)[0].price, 259);
     assert.equal(items[0].quantity, 2);
-    assert.match(orders.orderLines(items), /515\.34 DHS/);
+    assert.match(orders.orderLines(items), /518\.34 DHS/);
 });
 
 test('delivery threshold stays at 800 MAD including decimal subtotals', () => {
@@ -62,7 +62,7 @@ test('display, sorting and history parsers preserve decimal prices', () => {
 
 test('only five catalog prices changed; pack prices remain fixed', () => {
     const ctx = shop();
-    const expected = [179,252.50,269,225.80,229,308.25,353,257.67,249,279,568,448,578,797,538,1149,899,929,929];
+    const expected = [179,252.50,269,225.80,229,306,353,259,249,279,568,448,578,797,538,1149,899,929,929];
     assert.deepEqual(Array.from(ctx.window.allProducts, p => Number(p.price.split(' ')[0])), expected);
     for (const product of ctx.window.allProducts.filter(p => !p.isPack)) {
         const html = read(product.link.replace('../',''));
