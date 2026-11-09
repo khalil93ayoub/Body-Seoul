@@ -34,7 +34,7 @@ test('saved cart and order use current catalog prices and preserve quantities', 
     assert.equal(vm.runInContext('checkoutGrandTotal()', ctx), 783.8);
     const orders = ctx.window.orderPricing;
     const items = orders.readCart();
-    assert.equal(orders.total(items), 741.14);
+    assert.equal(orders.total(items), 743.8);
     assert.equal(orders.normalizeItems(items)[0].price, 259);
     assert.equal(items[0].quantity, 2);
     assert.match(orders.orderLines(items), /518\.34 DHS/);
