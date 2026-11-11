@@ -153,9 +153,9 @@
                     <span><i class="fa-solid fa-star"></i> ${rating} (${reviews})</span>
                     <div class="mobile-card-price">${oldPrice}<strong>${normalized.price} DHS</strong></div>
                 </div>
-                <button type="button" class="mobile-card-cart" data-mobile-cart="${normalized.id}" aria-label="Ajouter au panier">
-                    <i class="fa-solid fa-cart-shopping"></i>
-                </button>
+                ${product.comingSoon
+                    ? '<span class="mobile-card-cart is-disabled" aria-label="Bientôt disponible" title="Bientôt disponible"><i class="fa-solid fa-clock"></i></span>'
+                    : `<button type="button" class="mobile-card-cart" data-mobile-cart="${normalized.id}" aria-label="Ajouter au panier"><i class="fa-solid fa-cart-shopping"></i></button>`}
             </article>
         `;
     }
@@ -242,7 +242,7 @@
             button.addEventListener("click", event => {
                 event.preventDefault();
                 const product = catalogProducts().find(item => item.id === button.dataset.mobileCart);
-                if (product) {
+                if (product && !product.comingSoon) {
                     addToCart(product);
                 }
             });

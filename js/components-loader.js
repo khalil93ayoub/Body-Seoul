@@ -147,7 +147,7 @@ function loadMobileEnhancements() {
     }
 
     const script = document.createElement("script");
-    script.src = componentBase + "js/mobile.js?v=20261102prices";
+    script.src = componentBase + "js/mobile.js?v=20261111comingsoon";
     script.onload = () => {
         if (window.BodySeoulMobile) {
             window.BodySeoulMobile.init();
