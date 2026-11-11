@@ -102,7 +102,7 @@ const allProducts = [
         "title": "Celimax Retinol Shot Tightening Booster 30ml",
         "description": "Le Retinol Shot Tightening Booster de Celimax est un sérum anti-âge concentré à 0,1% de rétinol, l'actif de référence mondial pour la correction des rides, des pores élargis et de la text...",
         "image": "../products/Retinol Shot Tightening Serum/product-main.png",
-        "category": "cremes",
+        "category": "serums",
         "link": "../products/Retinol Shot Tightening Serum/index.html",
         "brand": "Celimax",
         "price": "259 DHS",
@@ -116,7 +116,7 @@ const allProducts = [
         "title": "Celimax Vita-A Retinal Shot Tightening Booster 15ml",
         "description": "Le Vita-A Retinal Shot Tightening Booster de Celimax est un concentré anti-âge de pointe formulé au rétinal (aldéhyde de vitamine A), actif jusqu'à 11 fois plus puissant que le rétinol cl...",
         "image": "../products/Celimax The -A Retinol Shot/product-main.png",
-        "category": "cremes",
+        "category": "serums",
         "link": "../products/Celimax The -A Retinol Shot/index.html",
         "brand": "Celimax",
         "price": "249 DHS",
@@ -130,7 +130,7 @@ const allProducts = [
         "title": "Medicube PDRN Pink Peptide Serum 30ml",
         "description": "Le PDRN Pink Peptide Serum de Medicube est un sérum de nouvelle génération qui exploite la technologie PDRN (Polydeoxyribonucléotide), un actif bio-technologique dérivé de l'ADN de saumon...",
         "image": "../products/medicube PDRN Pink Peptide Serum /product-main.png",
-        "category": "cremes",
+        "category": "serums",
         "link": "../products/medicube PDRN Pink Peptide Serum /index.html",
         "brand": "Medicube",
         "price": "279 DHS",
@@ -275,7 +275,11 @@ const allProducts = [
             "relief-cream",
             "relief-sun"
         ]
-    }
+    },
+    {"id": "dr-reju-all-pdrn-cream", "title": "Dr. Reju-All Advanced PDRN Rejuvenating Cream 20ml", "name": "Dr. Reju-All Advanced PDRN Rejuvenating Cream 20ml", "description": "Crème concentrée au PDRN, niacinamide et agents hydratants. Elle aide à apaiser la peau, à soutenir la barrière cutanée et à améliorer l’apparence de la fermeté et de l’éclat.", "image": "https://media.ulta.com/i/ulta/2659079?fmt=auto&h=800&w=800", "category": "cremes", "link": "../products/dr-reju-all-pdrn-cream/index.html", "brand": "Dr. Reju-All", "price": "402 DHS", "comingSoon": true},
+    {"id": "medicube-kojic-turmeric-mask", "title": "Medicube Kojic Acid Turmeric Night Wrapping Mask 75ml", "name": "Medicube Kojic Acid Turmeric Night Wrapping Mask 75ml", "description": "Masque de nuit pelable à l’acide kojique, au curcuma et aux actifs hydratants. Il aide à raviver l’éclat et à améliorer l’apparence d’un teint irrégulier pendant la nuit.", "image": "https://medparkonline.com/cdn/shop/files/Medicube_Kojic_Acid_Turmeric_Night_Wrapping_Mask_75ml.webp?v=1772269714", "category": "masques", "link": "../products/medicube-kojic-turmeric-mask/index.html", "brand": "Medicube", "price": "284 DHS", "comingSoon": true},
+    {"id": "medicube-zero-pore-one-day-serum", "title": "Medicube Zero Pore One Day Serum 30ml", "name": "Medicube Zero Pore One Day Serum 30ml", "description": "Sérum exfoliant aux AHA, BHA et PHA conçu pour désobstruer les pores et lisser le grain de peau. Sa formule associe aussi des ingrédients apaisants pour une routine ciblée sur les pores visibles et les irrégularités.", "image": "https://sajidshop.com/public/storage/images/products/product_1771227359_4920.jpg", "category": "serums", "link": "../products/medicube-zero-pore-one-day-serum/index.html", "brand": "Medicube", "price": "294 DHS", "comingSoon": true},
+    {"id": "medicube-pdrn-pink-one-day-serum", "title": "Medicube PDRN Pink One Day Serum 10 × 1.5ml", "name": "Medicube PDRN Pink One Day Serum 10 × 1.5ml", "description": "Coffret de dix ampoules individuelles de sérum rose au PDRN. Ce soin aide à hydrater, à adoucir et à donner à la peau une apparence plus lumineuse et rebondie. Il s’agit du format 10 × 1,5 ml, distinct du PDRN Pink Peptide Serum 30 ml.", "image": "https://kiyoko.ca/cdn/shop/files/d947b101dea93f49da9a2b56c438aad8.jpg?v=1754366674&width=1024", "category": "serums", "link": "../products/medicube-pdrn-pink-one-day-serum/index.html", "brand": "Medicube", "price": "255 DHS", "comingSoon": true}
 ];
 
 window.allProducts = allProducts;

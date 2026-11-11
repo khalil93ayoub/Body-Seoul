@@ -329,6 +329,9 @@ function addToCart(productOrId, amount = 1) {
     const product = normalizeProduct(productOrId);
     const quantityToAdd = Number(amount) || window.quantity || 1;
 
+    const catalogEntry = typeof findCatalogProduct === "function" && product ? findCatalogProduct(product.id) : null;
+    if (catalogEntry?.comingSoon) return;
+
     if (!product) {
         alert(window.BodySeoulLanguage?.getLanguage?.() === "ar" ? "لم يتم العثور على المنتج." : "Produit introuvable.");
         return;

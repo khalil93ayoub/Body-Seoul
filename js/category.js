@@ -167,6 +167,7 @@ function toggleCategoryFavorite(product) {
 }
 
 function addCategoryCart(product) {
+    if (product.comingSoon) return;
     const normalized = normalizedCategoryProduct(product);
 
     if (typeof addToCart === "function") {
@@ -205,7 +206,7 @@ function renderCategoryProducts() {
     filteredProducts.forEach((product, index) => {
         const productId = categoryProductId(product);
         const oldPrice = product.oldPrice ? '<del>' + product.oldPrice + '</del>' : '';
-        const packBadge = product.isPack ? '<span class="product-pack-badge">PACK</span>' : '';
+        const packBadge = product.comingSoon ? '<span class="product-pack-badge">Bientôt disponible</span>' : (product.isPack ? '<span class="product-pack-badge">PACK</span>' : '');
 
         grid.innerHTML += '<div class="category-product-card" data-index="' + index + '">' +
             packBadge +
@@ -226,9 +227,7 @@ function renderCategoryProducts() {
                     oldPrice +
                 '</div>' +
             '</div>' +
-            '<button class="product-cart" type="button" data-product="' + productId + '" aria-label="Ajouter au panier">' +
-                '<i class="fa-solid fa-cart-shopping"></i>' +
-            '</button>' +
+            (product.comingSoon ? '<span class="product-cart is-disabled" aria-label="Bientôt disponible">Bientôt disponible</span>' : '<button class="product-cart" type="button" data-product="' + productId + '" aria-label="Ajouter au panier"><i class="fa-solid fa-cart-shopping"></i></button>') +
         '</div>';
     });
 
