@@ -36,6 +36,11 @@
     }
 
     function renderStock(quantity) {
+        if (findCatalogProduct(productIdFromPath())?.comingSoon) {
+            document.querySelector(".product-stock-note")?.remove();
+            setButtonsState(0);
+            return;
+        }
         currentStock = Number(quantity) || 0;
         const element = ensureStockElement();
         if (!element) return;
@@ -67,6 +72,10 @@
 
         wrapQuantityControls();
         const product = findCatalogProduct(id);
+        if (product?.comingSoon) {
+            renderStock(0);
+            return;
+        }
         renderStock(product?.quantity || 10);
 
         window.BodySeoulFirebase?.load?.().then(firebaseTools => {

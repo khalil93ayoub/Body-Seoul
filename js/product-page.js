@@ -45,6 +45,8 @@ function changeImage(index) {
     });
 
     images[index].classList.add("active-thumb");
+    const counter = document.querySelector(".mobile-image-count");
+    if (counter) counter.textContent = `${index + 1}/${images.length}`;
 }
 
 function nextImage() {
@@ -150,6 +152,19 @@ document.addEventListener("DOMContentLoaded", () => {
     updateQuantityValue();
     enhanceProductDetailLayout();
     trackCurrentProductViewContent();
+    const main = document.querySelector(".gallery-main");
+    let touchStart = null;
+    main?.addEventListener("touchstart", event => {
+        touchStart = event.changedTouches[0]?.clientX ?? null;
+    }, { passive: true });
+    main?.addEventListener("touchend", event => {
+        if (touchStart === null) return;
+        const distance = (event.changedTouches[0]?.clientX ?? touchStart) - touchStart;
+        if (Math.abs(distance) > 40) {
+            if (distance < 0) nextImage(); else previousImage();
+        }
+        touchStart = null;
+    }, { passive: true });
 });
 
 function sharedStorage() {

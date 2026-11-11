@@ -107,6 +107,7 @@ function categoryProducts() {
 
     if (currentCategory === "best-sellers") {
         return products
+            .filter(product => !product.comingSoon)
             .slice()
             .sort((left, right) => productSales(right) - productSales(left))
             .slice(0, 5);

@@ -66,7 +66,9 @@
             <div class="product-gallery pack-gallery">
                 <div class="gallery-thumbnails">${thumbnails}</div>
                 <div class="gallery-main">
+                    <button class="gallery-arrow left-arrow" type="button" onclick="previousImage()" aria-label="Image précédente"><i class="fa-solid fa-chevron-left"></i></button>
                     <img id="mainProductImage" src="${leadImage}" alt="${escapeHTML(pack.title)}">
+                    <button class="gallery-arrow right-arrow" type="button" onclick="nextImage()" aria-label="Image suivante"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
             </div>
 

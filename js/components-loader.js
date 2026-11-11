@@ -189,7 +189,7 @@ function loadShopCoreScripts() {
             loadScriptOnce(componentBase + "js/firebase-sync.js?v=20260522d", () => {
                 window.BodySeoulSync?.init?.();
                 loadScriptOnce(componentBase + "js/account.js?v=20261102prices", () => window.BodySeoulAccount?.init());
-                loadScriptOnce(componentBase + "js/stock.js?v=20260607b", () => window.BodySeoulStock?.init());
+                loadScriptOnce(componentBase + "js/stock.js?v=20261111comingsoon", () => window.BodySeoulStock?.init());
                 if (document.getElementById("orders-history-list")) {
                     loadScriptOnce(componentBase + "js/orders-history.js?v=20261102prices", () => window.BodySeoulOrdersHistory?.init());
                 }
